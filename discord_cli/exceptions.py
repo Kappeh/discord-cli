@@ -1,0 +1,1 @@
+class CommandAlreadyExistsException(Exception): pass
