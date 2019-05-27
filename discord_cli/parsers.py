@@ -1,4 +1,4 @@
-import discord_cli.validation as val
+import discord_cli.validation as validation
 
 class Base_Parser(object):
     
@@ -21,10 +21,10 @@ class Integer_Parser(Base_Parser):
         self._include_max = include_max
     
     def parse(self, input_string):
-        if not val.validate_integer(input_string):
+        if not validation.validate_integer(input_string):
             return None
         result = int(input_string)
-        if not val.validate_bounds(result, self._min, self._max, self._include_min, self._include_max):
+        if not validation.validate_bounds(result, self._min, self._max, self._include_min, self._include_max):
             return None
         return result
     
@@ -38,8 +38,8 @@ class Word_Parser(Base_Parser):
         self._include_max_length = include_max_length
     
     def parse(self, input_string):
-        if not val.validate_word(input_string):
+        if not validation.validate_word(input_string):
             return None
-        if not val.validate_bounds(len(input_string), self._min_length, self._max_length, self._include_min_length, self._include_max_length):
+        if not validation.validate_bounds(len(input_string), self._min_length, self._max_length, self._include_min_length, self._include_max_length):
             return None
         return input_string
