@@ -2,19 +2,22 @@ import re
 
 def validate_string(string):
     if not isinstance(string, str):
-        raise TypeError
+        return False
     if len(string) == 0:
-        raise ValueError
+        return False
+    return True
 
 def validate_word(string):
     validate_string(string)
     if re.match('.*[^a-zA-Z].*', string):
-        raise ValueError
+        return False
+    return True
 
 def validate_integer(string):
     validate_string(string)
     if re.match('.*[^0-9].*', string):
-        raise ValueError
+        return False
+    return True
 
 def validate_bounds(value, min, max, include_min, inlucde_max):
     if min is not None:

@@ -1,8 +1,8 @@
 from inspect import iscoroutine
 
-from discord_cli.validation import (validate_integer, validate_string, validate_word)
+import discord_cli.validation as validation
 from discord_cli.exceptions import CommandAlreadyExistsException
-from discord_cli.arguments.argument_builder import Argument_Builder
+from discord_cli.argument_builder import Argument_Builder
 
 class Command(object):
 
@@ -10,11 +10,11 @@ class Command(object):
     def __init__(self, name, description = None, parent = None, function = None):
         
         # TODO: Move validation to command system class when implimented
-        if description is not None:
-            validate_string(description)
+        if description is not None and not validation.validate_string(description):
+            raise Exception
 
         if function is not None and not iscoroutine(function):
-            raise TypeError
+            raise Exception
 
         self._name = name
         self._description = description

@@ -14,7 +14,7 @@ class Base_Parser(object):
 class Integer_Parser(Base_Parser):
     
     def __init__(self, min, max, include_min, include_max):
-        super(Integer, self).__init__()
+        super(Integer_Parser, self).__init__()        
         self._min = min
         self._max = max
         self._include_min = include_min
@@ -26,12 +26,12 @@ class Integer_Parser(Base_Parser):
         result = int(input_string)
         if not val.validate_bounds(result, self._min, self._max, self._include_min, self._include_max):
             return None
-        return return
+        return result
     
 class Word_Parser(Base_Parser):
 
     def __init__(self, min_length, max_length, include_min_length, include_max_length):
-        super(Word, self).__init__()
+        super(Word_Parser, self).__init__()
         self._min_length = min_length
         self._max_length = max_length
         self._include_min_length = include_min_length
