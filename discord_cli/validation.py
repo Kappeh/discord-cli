@@ -8,14 +8,23 @@ def validate_string(string):
     return True
 
 def validate_word(string):
-    validate_string(string)
+    if not validate_string(string):
+        return False
     if re.match('.*[^a-zA-Z].*', string):
         return False
     return True
 
 def validate_integer(string):
-    validate_string(string)
+    if not validate_string(string):
+        return False
     if re.match('.*[^0-9].*', string):
+        return False
+    return True
+
+def validate_letter(string):
+    if not validate_word(string):
+        return False
+    if len(string) > 1:
         return False
     return True
 
