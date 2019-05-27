@@ -6,7 +6,7 @@ class Argument(object):
     def __init__(self, name, description, parser):
         if not validation.validate_word(name):
             raise ValueError
-        if not validation.validate_string(description):
+        if description is not None and not validation.validate_string(description):
             raise ValueError
 
         self._name = name
