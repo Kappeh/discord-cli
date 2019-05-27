@@ -5,6 +5,7 @@ from discord_cli.exceptions import CommandAlreadyExistsException
 
 from discord_cli.argument_builder import Argument_Builder
 from discord_cli.option_builder import Option_Builder
+from discord_cli.tag_builder import Tag_Builder
 
 class Command(object):
 
@@ -26,6 +27,7 @@ class Command(object):
 
         self._argument_builder = Argument_Builder(self)
         self._option_builder = Option_Builder(self)
+        self._tag_builder = Tag_Builder(self)
 
         self._sub_commands = {}
         self._sub_command_count = 0
@@ -64,10 +66,10 @@ class Command(object):
     def option(self):
         return self._option_builder
     
+    def tag(self, name, description , letter = None, word = None):
+        self._tag_builder.tag(name, description, letter, word)
+    
     # ---------- TODO ----------
-    # def tag(self, name, description , letter = None, word = None):
-    #     self._tag_builder.tag(name, description, letter, word)
-    #
     # def permission(self, permission):
     #     self._permission_builder.permission(permission)
     # --------------------------
