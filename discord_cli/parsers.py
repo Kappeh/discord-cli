@@ -1,4 +1,4 @@
-from discord_cli.validation import (validate_string, validate_integer, validate_word)
+import discord_cli.validation as val
 
 class Base_Parser(object):
     
@@ -21,24 +21,12 @@ class Integer_Parser(Base_Parser):
         self._include_max = include_max
     
     def parse(self, input_string):
-        if not validate_integer(input_string):
+        if not val.validate_integer(input_string):
             return None
-        
         result = int(input_string)
-
-        if self._min is not None:
-            if result < self._min:
-                return None
-            if self._include_min == False and result == self._min:
-                return None
-        
-        if self._max is not None:
-            if result > self._max:
-                return None
-            if self._include_max == False and result == self._max:
-                return None
-        
-        return int(input_string)
+        if not val.validate_bounds(result, self._min, self._max, self._include_min, self._include_max):
+            return None
+        return return
     
 class Word_Parser(Base_Parser):
 
@@ -50,17 +38,8 @@ class Word_Parser(Base_Parser):
         self._include_max_length = include_max_length
     
     def parse(self, input_string):
-        if not validate_word(input_string):
+        if not val.validate_word(input_string):
             return None
-
-        if self._min_length is not None:
-            if len(input_string) < self._min_length:
-                return None
-            if self._include_min_length == False and len(input_string) == self._min_length:
-                return None
-        
-        if self._max_length is not None:
-            if len(input_string) > self._max_length:
-                return None
-            if self._include_max_length == False and len(input_string) == self._max_length:
-                return None
+        if not val.validate_bounds(len(input_string), self._min_length, self._max_length, self._include_min_length, self._include_max_length):
+            return None
+        return input_string
