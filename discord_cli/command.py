@@ -2,12 +2,14 @@ from inspect import iscoroutine
 
 from discord_cli.validation import (validate_integer, validate_string, validate_word)
 from discord_cli.exceptions import CommandAlreadyExistsException
+from discord_cli.arguments.argument_builder import Argument_Builder
 
 class Command(object):
 
     # Should only be called from within the package
     def __init__(self, name, description = None, parent = None, function = None):
         
+        # TODO: Move validation to command system class when implimented
         if description is not None:
             validate_string(description)
 
@@ -20,6 +22,7 @@ class Command(object):
         self._parent = parent
         self._function = function
 
+        self._argument_builder = Argument_Builder(self)
         self._sub_commands = {}
         self._sub_command_count = 0
     
@@ -46,6 +49,26 @@ class Command(object):
     @property
     def function(self):
         return self._function
+
+    # Adding parameters and permissions ======================================================
+    
+    @property
+    def argument(self):
+        return self._argument_builder
+
+    # ---------- TODO ----------
+    # @property
+    # def option(self):
+    #     return self._option_builder
+    #
+    # def tag(self, name, description , letter = None, word = None):
+    #     self._tag_builder.tag(name, description, letter, word)
+    #
+    # def permission(self, permission):
+    #     self._permission_builder.permission(permission)
+    # --------------------------
+
+    # ========================================================================================
 
     def command(self, name, description = None):
         
