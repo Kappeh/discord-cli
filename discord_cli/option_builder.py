@@ -60,3 +60,11 @@ class Option_Builder(object):
     
     def word(self, name, description = None, letter = None, word = None, min_length = None, max_length = None, include_min_length = True, include_max_length = False):
         self._add_option(Option(name, description, letter, word, parsers.Word_Parser(min_length, max_length, include_min_length, include_max_length)))
+    
+    @property
+    def options(self):
+        return self._options
+    
+    @property
+    def option_count(self):
+        return self._option_count
