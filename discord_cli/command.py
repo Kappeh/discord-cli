@@ -76,13 +76,13 @@ class Command(object):
 
     # ========================================================================================
 
-    def command(self, name, description = None):
+    def command(self, name, description = None, function = None):
         
         #validate_word(name)
         if name in self._sub_commands:
             raise CommandAlreadyExistsException
         
-        self._sub_commands[name] = Command(name, description, parent = self)
+        self._sub_commands[name] = Command(name, description, parent = self, function = function)
         self._sub_command_count += 1
         return self._sub_commands[name]
 
