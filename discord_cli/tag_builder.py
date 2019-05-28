@@ -48,3 +48,11 @@ class Tag_Builder(object):
     def tag(self, name, description, letter, word):
         self._tags.append(Tag(name, description, letter, word))
         self._tag_count += 1
+    
+    @property
+    def tags(self):
+        return self._tags
+    
+    @property
+    def tag_count(self):
+        return self._tag_count
