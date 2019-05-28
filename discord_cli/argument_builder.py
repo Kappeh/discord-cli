@@ -42,3 +42,11 @@ class Argument_Builder(object):
     
     def word(self, name, description = None, min_length = None, max_length = None, include_min_length = True, include_max_length = False):
         self._add_argument(Argument(name, description, parsers.Word_Parser(min_length, max_length, include_min_length, include_max_length)))
+    
+    @property
+    def arguments(self):
+        return self._arguments
+    
+    @property
+    def argument_count(self):
+        return self._argument_count
