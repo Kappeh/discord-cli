@@ -1,4 +1,5 @@
 import discord_cli.parsers as parsers
+import discord_cli.exceptions as exceptions
 import discord_cli.validation as validation
 
 class Argument(object):
@@ -22,19 +23,28 @@ class Argument(object):
     def description(self):
         return self._description
     
-    def parse(input_string):
-        return self._parser.parse(input_string)
+    async def parse(self, input_string):
+        result = self._parser.parse(input_string)
+        if result is None:
+            return exceptions.Invalid_Argument_Error()
+        return result
     
 class Argument_Builder(object):
 
     def __init__(self, command):
         self._command = command
-        
+        self._name_table = {}
         self._arguments = []
         self._argument_count = 0
     
     def _add_argument(self, argument):
+        if argument.name in self._command._option_builder.name_table:
+            raise ValueError
+        if argument.name in self._command._tag_builder.name_table:
+            raise ValueError
+
         self._arguments.append(argument)
+        self._name_table[argument.name] = argument
         self._argument_count += 1
 
     def integer(self, name, description = None, min = None, max = None, include_min = None, include_max = None):
@@ -50,3 +60,7 @@ class Argument_Builder(object):
     @property
     def argument_count(self):
         return self._argument_count
+    
+    @property
+    def name_table(self):
+        return self._name_table

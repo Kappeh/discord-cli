@@ -1,4 +1,6 @@
-from inspect import iscoroutine
+from inspect import iscoroutinefunction
+
+import discord_cli.exceptions as exceptions
 
 import discord_cli.validation as validation
 from discord_cli.exceptions import CommandAlreadyExistsException
@@ -16,7 +18,7 @@ class Command(object):
         if description is not None and not validation.validate_string(description):
             raise Exception
 
-        if function is not None and not iscoroutine(function):
+        if function is not None and not iscoroutinefunction(function):
             raise Exception
 
         self._name = name
@@ -66,7 +68,7 @@ class Command(object):
     def option(self):
         return self._option_builder
     
-    def tag(self, name, description , letter = None, word = None):
+    def tag(self, name, description = None, letter = None, word = None):
         self._tag_builder.tag(name, description, letter, word)
     
     # ---------- TODO ----------
@@ -75,6 +77,86 @@ class Command(object):
     # --------------------------
 
     # ========================================================================================
+
+    async def get_command(self, *argv):
+        if len(argv) == 0:
+            return self, []
+        if argv[0] in self._sub_commands:
+            return await self._sub_commands[argv[0]].get_command(*argv[1:])
+        return self, argv
+
+    async def _parse_params(self, params):
+        args = {}
+        opts = {}
+        tags = {}
+
+        for arg in self._argument_builder.arguments:
+            args[arg.name] = None
+        for opt in self._option_builder.options:
+            opts[opt.name] = None
+        for tag in self._tag_builder.tags:
+            tags[tag.name] = False
+
+        # Parsing params
+        param_ptr = 0
+        argument_ptr = 0
+
+        while param_ptr < len(params):
+            param = params[param_ptr]
+            option = None
+            tag = None
+
+            if param.startswith('--'):
+                word = param[2:]
+                if word in self._option_builder.word_table:
+                    option = self._option_builder.word_table[word]
+                elif word in self._tag_builder.word_table:
+                    tag = self._tag_builder.word_table[word]
+                else:
+                    return exceptions.Unexpected_Word_Error()
+            elif param.startswith('-'):
+                letter = param[1:]
+                if letter in self._option_builder.letter_table:
+                    option = self._option_builder.letter_table[letter]
+                elif letter in self._tag_builder.letter_table:
+                    tag = self._tag_builder.letter_table[letter]
+                else:
+                    return exceptions.Unexpected_Letter_Error()
+
+            if option is not None:
+                param_ptr += 1
+                if param_ptr >= len(params):
+                    return exceptions.Invalid_Option_Error()
+                parsed_param = await option.parse(params[param_ptr])
+                if isinstance(parsed_param, exceptions.Parsing_Error):
+                    return parsed_param
+                opts[option.name] = parsed_param
+            elif tag is not None:
+                tags[tag.name] = True
+            else:
+                if argument_ptr >= self._argument_builder.argument_count:
+                    return exceptions.Unexpected_Argument_Error()
+                argument = self._argument_builder.arguments[argument_ptr]
+                parsed_param = await argument.parse(param)
+                if isinstance(parsed_param, exceptions.Parsing_Error):
+                    return parsed_param
+                args[argument.name] = parsed_param
+
+                argument_ptr += 1
+
+            param_ptr += 1
+        
+        if argument_ptr < self._argument_builder.argument_count:
+            return exceptions.Expected_Arguments_Error()
+        
+        return {**args, **opts, **tags}
+
+    async def execute(self, client, message, params, *argv, **kwargs):
+        params = await self._parse_params(params)
+        if isinstance(params, exceptions.Parsing_Error):
+            return params
+        return await self._function(client, message, params, *argv, **kwargs)
+        
 
     def command(self, name, description = None, function = None):
         

@@ -1,1 +1,1 @@
-from .command import Command
+from discord_cli.command_system import Command_System

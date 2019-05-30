@@ -1,4 +1,5 @@
 import discord_cli.parsers as parsers
+import discord_cli.exceptions as exceptions
 import discord_cli.validation as validation
 
 class Option(object):
@@ -40,8 +41,11 @@ class Option(object):
     def word(self):
         return self._word
     
-    def parse(self, input_string):
-        return self._parser.parse(input_string)
+    async def parse(self, input_string):
+        result = self._parser.parse(input_string)
+        if result is None:
+            return exceptions.Invalid_Option_Error()
+        return result
 
 class Option_Builder(object):
     
@@ -49,10 +53,34 @@ class Option_Builder(object):
         self._command = command
         
         self._options = []
+        self._name_table = {}
+        self._letter_table = {}
+        self._word_table = {}
         self._option_count = 0
     
     def _add_option(self, option):
+        if option.name in self._name_table:
+            raise ValueError
+        if option.letter in self._letter_table:
+            raise ValueError
+        if option.word in self._word_table:
+            raise ValueError
+
+        if option.name in self._command._argument_builder.name_table:
+            raise ValueError
+        if option.name in self._command._tag_builder.name_table:
+            raise ValueError
+        if option.letter in self._command._tag_builder.letter_table:
+            raise ValueError
+        if option.word in self._command._tag_builder.word_table:
+            raise ValueError
+
         self._options.append(option)
+        self._name_table[option.name] = option
+        self._letter_table[option.letter] = option
+        if option.word is not None:
+            self._word_table[option.word] = option
+
         self._option_count += 1
     
     def integer(self, name, description = None, letter = None, word = None, min = None, max = None, include_min = True, include_max = False):
@@ -65,6 +93,18 @@ class Option_Builder(object):
     def options(self):
         return self._options
     
+    @property
+    def name_table(self):
+        return self._name_table
+
+    @property
+    def letter_table(self):
+        return self._letter_table
+    
+    @property
+    def word_table(self):
+        return self._word_table
+
     @property
     def option_count(self):
         return self._option_count

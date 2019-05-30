@@ -43,16 +43,53 @@ class Tag_Builder(object):
         self._command = command
         
         self._tags = []
+        self._name_table = {}
+        self._letter_table = {}
+        self._word_table = {}
         self._tag_count = 0
     
     def tag(self, name, description, letter, word):
-        self._tags.append(Tag(name, description, letter, word))
+        new_tag = Tag(name, description, letter, word)
+
+        if new_tag.name in self._name_table:
+            raise ValueError
+        if new_tag.letter in self._letter_table:
+            raise ValueError
+        if new_tag.word in self._word_table:
+            raise ValueError
+
+        if new_tag.name in self._command._argument_builder.name_table:
+            raise ValueError
+        if new_tag.name in self._command._option_builder.name_table:
+            raise ValueError
+        if new_tag.letter in self._command._option_builder.letter_table:
+            raise ValueError
+        if new_tag.word in self._command._option_builder.word_table:
+            raise ValueError
+
+        self._tags.append(new_tag)
+        self._name_table[new_tag.name] = new_tag
+        self._letter_table[new_tag.letter] = new_tag
+        if new_tag.word is not None:
+            self._word_table[new_tag.word] = new_tag
         self._tag_count += 1
     
     @property
     def tags(self):
         return self._tags
     
+    @property
+    def name_table(self):
+        return self._name_table
+
+    @property
+    def letter_table(self):
+        return self._letter_table
+    
+    @property
+    def word_table(self):
+        return self._word_table
+
     @property
     def tag_count(self):
         return self._tag_count
