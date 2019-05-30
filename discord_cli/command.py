@@ -118,24 +118,26 @@ class Command(object):
         while param_ptr < len(params):
             param = params[param_ptr]
             option = None
-            tag = None
+            tag_list = []
 
             if param.startswith('--'):
                 word = param[2:]
                 if word in self._option_builder.word_table:
                     option = self._option_builder.word_table[word]
                 elif word in self._tag_builder.word_table:
-                    tag = self._tag_builder.word_table[word]
+                    tag_list = [self._tag_builder.word_table[word]]
                 else:
                     raise exceptions.Unexpected_Word_Error('\'{}\' has no option or tag associated with --{}'.format(self._command_string, word))
             elif param.startswith('-'):
-                letter = param[1:]
-                if letter in self._option_builder.letter_table:
-                    option = self._option_builder.letter_table[letter]
-                elif letter in self._tag_builder.letter_table:
-                    tag = self._tag_builder.letter_table[letter]
+                letters = param[1:]
+                if letters in self._option_builder.letter_table:
+                    option = self._option_builder.letter_table[letters]
                 else:
-                    raise exceptions.Unexpected_Letter_Error('\'{}\' has no option or tag associated with -{}'.format(self._command_string, letter))
+                    for letter in letters:
+                        if letter in self._tag_builder.letter_table:
+                            tag_list.append(self._tag_builder.letter_table[letter])
+                        else:
+                            raise exceptions.Unexpected_Letter_Error('\'{}\' has no option or tag associated with -{}'.format(self._command_string, letter))
 
             if option is not None:
                 param_ptr += 1
@@ -151,8 +153,9 @@ class Command(object):
                 if isinstance(parsed_param, exceptions.Discord_CLI_Error):
                     return parsed_param
                 opts[option.name] = parsed_param
-            elif tag is not None:
-                tags[tag.name] = True
+            elif len(tag_list) != 0:
+                for tag in tag_list:
+                    tags[tag.name] = True
             else:
                 if argument_ptr >= self._argument_builder.argument_count:
                     raise exceptions.Unexpected_Argument_Error('\'{}\' only expected {} arguments'.format(self._command_string, self._argument_builder.argument_count))
