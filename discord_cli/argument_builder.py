@@ -36,6 +36,8 @@ class Argument_Builder(object):
         self._name_table = {}
         self._arguments = []
         self._argument_count = 0
+
+        self._first_is_text = False
     
     def _add_argument(self, argument):
         if argument.name in self._command._option_builder.name_table:
@@ -51,6 +53,10 @@ class Argument_Builder(object):
         self._add_argument(Argument(name, description, parsers.Integer_Parser(min, max, include_min, include_max)))
     
     def word(self, name, description = None, min_length = None, max_length = None, include_min_length = True, include_max_length = False):
+        if self._command.sub_command_count != 0:
+            raise exceptions.Ambiguous_Parameter_Error
+        if self._argument_count == 0:
+            self._first_is_text = True
         self._add_argument(Argument(name, description, parsers.Word_Parser(min_length, max_length, include_min_length, include_max_length)))
     
     @property
@@ -64,3 +70,7 @@ class Argument_Builder(object):
     @property
     def name_table(self):
         return self._name_table
+    
+    @property
+    def first_is_text(self):
+        return self._first_is_text

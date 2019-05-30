@@ -1,4 +1,5 @@
-class CommandAlreadyExistsException(Exception): pass
+class Command_Already_Exists_Error(Exception): pass
+class Ambiguous_Parameter_Error(Exception): pass
 
 class Parsing_Error(object):
     def __init__(self, message):

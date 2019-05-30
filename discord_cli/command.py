@@ -161,13 +161,13 @@ class Command(object):
         if not callable(self._function):
             return exceptions.Command_Not_Executable_Error()
         return await self._function(client, message, params, *argv, **kwargs)
-        
 
     def command(self, name, description = None, function = None):
         
-        #validate_word(name)
+        if self._argument_builder._first_is_text:
+            raise exceptions.Ambiguous_Parameter_Error
         if name in self._sub_commands:
-            raise exceptions.CommandAlreadyExistsException
+            raise exceptions.Command_Already_Exists_Error
         
         command_string = None
         if self._command_string is None:
