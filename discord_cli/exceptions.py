@@ -39,3 +39,7 @@ class Expected_Arguments_Error(Parsing_Error):
 class Command_Not_Executable_Error(Parsing_Error):
     def __init__(self):
         super(Command_Not_Executable_Error, self).__init__('Command not executable')
+
+class Insufficient_Permissions_Error(Parsing_Error):
+    def __init__(self):
+        super(Insufficient_Permissions_Error, self).__init__('Insufficient permissions')

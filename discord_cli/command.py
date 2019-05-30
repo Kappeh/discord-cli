@@ -1,13 +1,12 @@
 from inspect import iscoroutinefunction
 
 import discord_cli.exceptions as exceptions
-
 import discord_cli.validation as validation
-from discord_cli.exceptions import CommandAlreadyExistsException
 
 from discord_cli.argument_builder import Argument_Builder
 from discord_cli.option_builder import Option_Builder
 from discord_cli.tag_builder import Tag_Builder
+from discord_cli.permission_builder import Permission_Builder
 
 class Command(object):
 
@@ -32,6 +31,7 @@ class Command(object):
         self._argument_builder = Argument_Builder(self)
         self._option_builder = Option_Builder(self)
         self._tag_builder = Tag_Builder(self)
+        self._permission_builder = Permission_Builder(self)
 
         self._sub_commands = {}
         self._sub_command_count = 0
@@ -73,18 +73,19 @@ class Command(object):
     def tag(self, name, description = None, letter = None, word = None):
         self._tag_builder.tag(name, description, letter, word)
     
-    # ---------- TODO ----------
-    # def permission(self, permission):
-    #     self._permission_builder.permission(permission)
-    # --------------------------
+    def permission(self, permission):
+        self._permission_builder.permission(permission)
 
     # ========================================================================================
 
-    async def get_command(self, *argv):
+    async def get_command(self, client, message, *argv):
         if len(argv) == 0:
             return self, []
         if argv[0] in self._sub_commands:
-            return await self._sub_commands[argv[0]].get_command(*argv[1:])
+            sub_command = self._sub_commands[argv[0]]
+            if not await sub_command._permission_builder.evaluate(client, message):
+                return exceptions.Insufficient_Permissions_Error()
+            return await sub_command.get_command(client, message, *argv[1:])
         return self, argv
 
     async def _parse_params(self, params):
@@ -166,7 +167,7 @@ class Command(object):
         
         #validate_word(name)
         if name in self._sub_commands:
-            raise CommandAlreadyExistsException
+            raise exceptions.CommandAlreadyExistsException
         
         command_string = None
         if self._command_string is None:
@@ -207,6 +208,7 @@ class Command(object):
         lines.append('Usage: ' + self._command_string + ' ' +params)
         if self._description is not None:
             lines.append(self._description)
+        
         if self._argument_builder.argument_count != 0:
             lines.append('Arguments:')
             for arg in self._argument_builder.arguments:
@@ -214,6 +216,7 @@ class Command(object):
                 if arg.description is not None:
                     tmp.append(arg.description)
                 lines.append('  ' + ' | '.join(tmp))
+        
         if self._option_builder.option_count != 0:
             lines.append('Options:')
             for opt in self._option_builder.options:
@@ -223,6 +226,7 @@ class Command(object):
                 if opt.description is not None:
                     tmp.append(opt.description)
                 lines.append('  ' + ' | '.join(tmp))
+        
         if self._tag_builder.tag_count != 0:
             lines.append('Tags:')
             for tag in self._tag_builder.tags:
@@ -232,7 +236,14 @@ class Command(object):
                 if tag.description is not None:
                     tag.append(tag.description)
                 lines.append('  ' + ' | '.join(tmp))
+        
         if self._sub_command_count != 0:
-            lines.append('Subcommands:')
-            lines.append('\n'.join(['  {}'.format(x) for x in self._sub_commands]))
+            first = True
+            for _, sub_command in self._sub_commands.items():
+                if await sub_command._permission_builder.evaluate(client, message):
+                    if first:
+                        lines.append('Subcommands:')
+                        first = False
+                    lines.append('  {}'.format(sub_command.name))        
+        
         return '\n'.join(lines)

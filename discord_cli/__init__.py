@@ -1,1 +1,2 @@
 from discord_cli.command_system import Command_System
+import discord_cli.permissions as perms
