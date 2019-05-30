@@ -46,7 +46,20 @@ class Command_System(object):
 
     async def execute(self, client, message, command_string, *argv, **kwargs):
         command_elements = await self._split_command_string(command_string)
-        cmd, params = await self._root.get_command(*command_elements)
+        cmd_params = await self._root.get_command(*command_elements)
+        if isinstance(cmd_params, exceptions.Parsing_Error):
+            return cmd_params
+        cmd, params = cmd_params
         if cmd is self._root:
             return exceptions.Command_Not_Found_Error()
         return await cmd.execute(client, message, params, *argv, **kwargs)
+
+    async def usage_message(self, client, message, command_string):
+        command_elements = await self._split_command_string(command_string)
+        cmd_params = await self._root.get_command(*command_elements)
+        if isinstance(cmd_params, exceptions.Parsing_Error):
+            return cmd_params
+        cmd, params = cmd_params
+        if cmd is self._root:
+            return exceptions.Command_Not_Found_Error()
+        return await cmd.usage_message(client, message, command_string)

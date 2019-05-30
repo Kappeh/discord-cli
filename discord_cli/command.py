@@ -12,7 +12,7 @@ from discord_cli.tag_builder import Tag_Builder
 class Command(object):
 
     # Should only be called from within the package
-    def __init__(self, name, description = None, parent = None, function = None):
+    def __init__(self, name, description = None, parent = None, command_string = None, function = None):
         
         # TODO: Move validation to command system class when implimented
         if description is not None and not validation.validate_string(description):
@@ -26,6 +26,8 @@ class Command(object):
 
         self._parent = parent
         self._function = function
+
+        self._command_string = command_string
 
         self._argument_builder = Argument_Builder(self)
         self._option_builder = Option_Builder(self)
@@ -155,6 +157,8 @@ class Command(object):
         params = await self._parse_params(params)
         if isinstance(params, exceptions.Parsing_Error):
             return params
+        if not callable(self._function):
+            return exceptions.Command_Not_Executable_Error()
         return await self._function(client, message, params, *argv, **kwargs)
         
 
@@ -164,7 +168,13 @@ class Command(object):
         if name in self._sub_commands:
             raise CommandAlreadyExistsException
         
-        self._sub_commands[name] = Command(name, description, parent = self, function = function)
+        command_string = None
+        if self._command_string is None:
+            command_string = name
+        else:
+            command_string = self._command_string + ' ' + name
+
+        self._sub_commands[name] = Command(name, description, command_string = command_string, parent = self, function = function)
         self._sub_command_count += 1
         return self._sub_commands[name]
 
@@ -181,3 +191,48 @@ class Command(object):
             result += command_obj.tree_string(details = details, prefix = new_prefix, include_name = False)
         
         return result
+    
+    async def usage_message(self, client, message, command_string):
+        lines = []
+        
+        params = []
+        if self._argument_builder.argument_count != 0:
+            params.append(' '.join(['<{}>'.format(x.name) for x in self._argument_builder.arguments]))
+        if self._option_builder.option_count != 0:
+            params.append('[OPTIONS]')
+        if self._tag_builder.tag_count != 0:
+            params.append('[TAGS]')
+        params = ' '.join(params)
+
+        lines.append('Usage: ' + self._command_string + ' ' +params)
+        if self._description is not None:
+            lines.append(self._description)
+        if self._argument_builder.argument_count != 0:
+            lines.append('Arguments:')
+            for arg in self._argument_builder.arguments:
+                tmp = [arg.name]
+                if arg.description is not None:
+                    tmp.append(arg.description)
+                lines.append('  ' + ' | '.join(tmp))
+        if self._option_builder.option_count != 0:
+            lines.append('Options:')
+            for opt in self._option_builder.options:
+                tmp = [opt.name, '-' + opt.letter]
+                if opt.word is not None:
+                    tmp.append('--' + opt.word)
+                if opt.description is not None:
+                    tmp.append(opt.description)
+                lines.append('  ' + ' | '.join(tmp))
+        if self._tag_builder.tag_count != 0:
+            lines.append('Tags:')
+            for tag in self._tag_builder.tags:
+                tmp = [tag.name, '-' + tag.letter]
+                if tag.word is not None:
+                    tmp.append('--' + tag.word)
+                if tag.description is not None:
+                    tag.append(tag.description)
+                lines.append('  ' + ' | '.join(tmp))
+        if self._sub_command_count != 0:
+            lines.append('Subcommands:')
+            lines.append('\n'.join(['  {}'.format(x) for x in self._sub_commands]))
+        return '\n'.join(lines)

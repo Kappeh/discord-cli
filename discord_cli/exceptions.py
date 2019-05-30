@@ -35,3 +35,7 @@ class Invalid_Option_Error(Parsing_Error):
 class Expected_Arguments_Error(Parsing_Error):
     def __init__(self):
         super(Expected_Arguments_Error, self).__init__('Expected more arguments')
+
+class Command_Not_Executable_Error(Parsing_Error):
+    def __init__(self):
+        super(Command_Not_Executable_Error, self).__init__('Command not executable')
