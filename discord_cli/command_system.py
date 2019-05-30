@@ -3,7 +3,7 @@ import discord_cli.exceptions as exceptions
 
 class Command_System(object):
     
-    def __init__(self, name = 'Command System', description = None):
+    def __init__(self, name = 'Command_System', description = None):
         self._root = Command(name, description)
     
     def command(self, name, description = None, function = None):

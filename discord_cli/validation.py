@@ -7,6 +7,13 @@ def validate_string(string):
         return False
     return True
 
+def validate_command_name(string):
+    if not validate_string(string):
+        return False
+    if re.match('.*[^a-zA-Z_].*'):
+        return False
+    return True
+
 def validate_word(string):
     if not validate_string(string):
         return False

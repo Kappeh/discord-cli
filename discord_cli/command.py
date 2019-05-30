@@ -13,10 +13,10 @@ class Command(object):
     # Should only be called from within the package
     def __init__(self, name, description = None, parent = None, command_string = None, function = None):
         
-        # TODO: Move validation to command system class when implimented
+        if not validation.validate_command_name(name):
+            raise Exception
         if description is not None and not validation.validate_string(description):
             raise Exception
-
         if function is not None and not iscoroutinefunction(function):
             raise Exception
 
