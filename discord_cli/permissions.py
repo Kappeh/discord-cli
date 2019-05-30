@@ -2,7 +2,7 @@ class Base_Permission(object):
     def __init__(self):
         pass
     async def evaluate(client, message):
-        raise NotImplementedError
+        raise NotImplementedError('Cannot run evaluate on base permission class')
 
 class Permission_Operator(Base_Permission):
     def __init__(self, perm1, perm2):

@@ -1,4 +1,5 @@
 import discord_cli.permissions as permissions
+import discord_cli.exceptions as exceptions
 
 class Permission_Builder(object):
 
@@ -10,7 +11,7 @@ class Permission_Builder(object):
     
     def permission(self, permission):
         if not isinstance(permission, permissions.Base_Permission):
-            raise TypeError
+            raise exceptions.Type_Error('permission must be a permission type')
 
         self._permissions.append(permission)
         self._permission_count += 1
@@ -30,4 +31,5 @@ class Permission_Builder(object):
         for permission in self._permissions:
             if await permission.evaluate(client, message):
                 return True
+                
         return False

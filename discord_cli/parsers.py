@@ -1,15 +1,13 @@
 import discord_cli.validation as validation
+import discord_cli.exceptions as exceptions
 
 class Base_Parser(object):
     
     def __init__(self):
         pass
     
-    def parse(self, input_string):
+    async def parse(self, input_string):
         raise NotImplementedError
-    
-    def validate(self, input_string):
-        return self.parse(input_string) is not None
 
 class Integer_Parser(Base_Parser):
     
@@ -20,12 +18,11 @@ class Integer_Parser(Base_Parser):
         self._include_min = include_min
         self._include_max = include_max
     
-    def parse(self, input_string):
-        if not validation.validate_integer(input_string):
-            return None
+    async def parse(self, input_string):
+
+        validation.validate_integer(input_string)
         result = int(input_string)
-        if not validation.validate_bounds(result, self._min, self._max, self._include_min, self._include_max):
-            return None
+        validation.validate_bounds(result, self._min, self._max, self._include_min, self._include_max)
         return result
     
 class Word_Parser(Base_Parser):
@@ -37,9 +34,10 @@ class Word_Parser(Base_Parser):
         self._include_min_length = include_min_length
         self._include_max_length = include_max_length
     
-    def parse(self, input_string):
-        if not validation.validate_word(input_string):
-            return None
-        if not validation.validate_bounds(len(input_string), self._min_length, self._max_length, self._include_min_length, self._include_max_length):
-            return None
+    async def parse(self, input_string):
+        validation.validate_word(input_string)
+        try:
+            validation.validate_bounds(len(input_string), self._min_length, self._max_length, self._include_min_length, self._include_max_length)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('length {}'.format(str(e)))
         return input_string

@@ -5,18 +5,31 @@ import discord_cli.validation as validation
 class Option(object):
     
     def __init__(self, name, description, letter, word, parser):
-        if not validation.validate_word(name):
-            raise ValueError
-        if description is not None and not validation.validate_string(description):
-            raise ValueError
+        
+        try:
+            validation.validate_word(name)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Option name {}'.format(str(e)))
+        
+        try:
+            if description is not None:
+                validation.validate_string(description)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Option description {}'.format(str(e)))
 
         if letter is None:
             letter = name[0]
-        elif not validation.validate_letter(letter):
-            raise ValueError
+        
+        try:
+            validation.validate_letter(letter)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Option letter {}'.format(str(e)))
 
-        if word is not None and not validation.validate_word(word):
-            raise ValueError
+        try:
+            if word is not None:
+                validation.validate_word(word)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Option word {}'.format(str(e)))
 
         self._name = name
         self._description = description
@@ -42,10 +55,7 @@ class Option(object):
         return self._word
     
     async def parse(self, input_string):
-        result = self._parser.parse(input_string)
-        if result is None:
-            return exceptions.Invalid_Option_Error()
-        return result
+        return await self._parser.parse(input_string)
 
 class Option_Builder(object):
     
@@ -60,20 +70,20 @@ class Option_Builder(object):
     
     def _add_option(self, option):
         if option.name in self._name_table:
-            raise ValueError
+            raise exceptions.Name_Already_In_Use_Error('Name \'{}\' is in use by another option'.format(name))
         if option.letter in self._letter_table:
-            raise ValueError
-        if option.word in self._word_table:
-            raise ValueError
+            raise exceptions.Letter_Already_In_Use_Error('Letter \'-{}\' is in use by another option'.format(letter))
+        if option.word is not None and option.word in self._word_table:
+            raise exceptions.Word_Already_In_Use_Error('Word \'--{}\' already in use by another option'.format(word))
 
         if option.name in self._command._argument_builder.name_table:
-            raise ValueError
+            raise exceptions.Name_Already_In_Use_Error('Name \'{}\' is in use by an argument'.format(name))
         if option.name in self._command._tag_builder.name_table:
-            raise ValueError
+            raise exceptions.Name_Already_In_Use_Error('Name \'{}\' is in use by a tag'.format(name))
         if option.letter in self._command._tag_builder.letter_table:
-            raise ValueError
+            raise exceptions.Letter_Already_In_Use_Error('Letter \'-{}\' is in use by a tag'.format(letter))
         if option.word in self._command._tag_builder.word_table:
-            raise ValueError
+            raise exceptions.Word_Already_In_Use_Error('Word \'--{}\' already in use by a tag'.format(word))
 
         self._options.append(option)
         self._name_table[option.name] = option

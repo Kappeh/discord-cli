@@ -1,20 +1,33 @@
 import discord_cli.validation as validation
+import discord_cli.exceptions as exceptions
 
 class Tag(object):
 
     def __init__(self, name, description, letter, word):
-        if not validation.validate_word(name):
-            raise ValueError
-        if description is not None and not validation.validate_string(description):
-            raise ValueError
+        try:
+            validation.validate_word(name)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Tag name {}, \'{}\' given'.format(str(e), name))
+        
+        try:
+            if description is not None:
+                validation.validate_string(description)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Tag description {}, \'{}\' given'.format(str(e), description))
 
         if letter is None:
             letter = name[0]
-        elif not validation.validate_letter(letter):
-            raise ValueError
         
-        if word is not None and not validation.validate_word(word):
-            raise ValueError
+        try:
+            validation.validate_letter(letter)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Tag letter {}, \'{}\' given'.format(str(e), letter))
+
+        try:
+            if word is not None:
+                validation.validate_word(word)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Tag word {}, \'{}\' given'.format(str(e), word))
 
         self._name = name
         self._description = description
@@ -52,20 +65,20 @@ class Tag_Builder(object):
         new_tag = Tag(name, description, letter, word)
 
         if new_tag.name in self._name_table:
-            raise ValueError
+            raise exceptions.Name_Already_In_Use_Error('Name \'{}\' is in use by another tag'.format(name))
         if new_tag.letter in self._letter_table:
-            raise ValueError
-        if new_tag.word in self._word_table:
-            raise ValueError
+            raise exceptions.Letter_Already_In_Use_Error('Letter \'-{}\' is in use by another tag'.format(letter))
+        if new_tag.word is not None and new_tag.word in self._word_table:
+            raise exceptions.Word_Already_In_Use_Error('Word \'--{}\' already in use by another tag'.format(word))
 
         if new_tag.name in self._command._argument_builder.name_table:
-            raise ValueError
+            raise exceptions.Name_Already_In_Use_Error('Name \'{}\' is in use by an argument'.format(name))
         if new_tag.name in self._command._option_builder.name_table:
-            raise ValueError
+            raise exceptions.Name_Already_In_Use_Error('Name \'{}\' is in use by an option'.format(name))
         if new_tag.letter in self._command._option_builder.letter_table:
-            raise ValueError
+            raise exceptions.Letter_Already_In_Use_Error('Letter \'-{}\' is in use by an option'.format(letter))
         if new_tag.word in self._command._option_builder.word_table:
-            raise ValueError
+            raise exceptions.Word_Already_In_Use_Error('Word \'--{}\' already in use by an option'.format(word))
 
         self._tags.append(new_tag)
         self._name_table[new_tag.name] = new_tag

@@ -1,51 +1,41 @@
 import re
+import discord_cli.exceptions as exceptions
 
 def validate_string(string):
     if not isinstance(string, str):
-        return False
+        raise exceptions.Type_Error('expected str instance, {} found'.format(string.__class__.__name__))
     if len(string) == 0:
-        return False
-    return True
+        raise exceptions.Value_Error('must not have 0 length')
 
 def validate_command_name(string):
-    if not validate_string(string):
-        return False
-    if re.match('.*[^a-zA-Z_].*'):
-        return False
-    return True
+    validate_string(string)
+    if re.match('.*[^a-zA-Z_].*', string):
+        raise exceptions.Value_Error('must only contain letters and underscores')
 
 def validate_word(string):
-    if not validate_string(string):
-        return False
+    validate_string(string)
     if re.match('.*[^a-zA-Z].*', string):
-        return False
-    return True
+        raise exceptions.Value_Error('must only contain letters')
 
 def validate_integer(string):
-    if not validate_string(string):
-        return False
+    validate_string(string)
     if re.match('.*[^0-9].*', string):
-        return False
-    return True
+        raise exceptions.Value_Error('must only contain digits')
 
 def validate_letter(string):
-    if not validate_word(string):
-        return False
+    validate_word(string)
     if len(string) > 1:
-        return False
-    return True
+        raise exceptions.Value_Error('must have length 1')
 
 def validate_bounds(value, min, max, include_min, inlucde_max):
     if min is not None:
+        if include_min == False and result <= min:
+            raise exceptions.Value_Error('must be greater than {}'.format(min))
         if result < min:
-            return False
-        if include_min == False and result == min:
-            return False
+            raise exceptions.Value_Error('cannot be less than {}'.format(min))
     
     if max is not None:
+        if include_max == False and result >= max:
+            raise exceptions.Value_Error('must be less than {}'.format(min))
         if result > max:
-            return False
-        if include_max == False and result == max:
-            return False
-    
-    return True
+            raise exceptions.Value_Error('cannot be greater than {}'.format(max))

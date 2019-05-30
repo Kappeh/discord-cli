@@ -13,12 +13,19 @@ class Command(object):
     # Should only be called from within the package
     def __init__(self, name, description = None, parent = None, command_string = None, function = None):
         
-        if not validation.validate_command_name(name):
-            raise Exception
-        if description is not None and not validation.validate_string(description):
-            raise Exception
+        try:
+            validation.validate_command_name(name)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Command name {}'.format(str(e)))
+
+        try:
+            if description is not None:
+                validation.validate_string(description)
+        except exceptions.Discord_CLI_Error as e:
+            raise type(e)('Command description {}'.format(str(e)))
+
         if function is not None and not iscoroutinefunction(function):
-            raise Exception
+            raise exceptions.Not_Async_Function_Error('Command function must be an async function')
 
         self._name = name
         self._description = description
@@ -48,6 +55,10 @@ class Command(object):
     def description(self):
         return self._description
     
+    @property
+    def command_string(self):
+        return self._command_string
+
     @property
     def sub_commands(self):
         return self._sub_commands
@@ -84,7 +95,7 @@ class Command(object):
         if argv[0] in self._sub_commands:
             sub_command = self._sub_commands[argv[0]]
             if not await sub_command._permission_builder.evaluate(client, message):
-                return exceptions.Insufficient_Permissions_Error()
+                raise exceptions.Insufficient_Permissions_Error('Insufficient permissions')
             return await sub_command.get_command(client, message, *argv[1:])
         return self, argv
 
@@ -116,7 +127,7 @@ class Command(object):
                 elif word in self._tag_builder.word_table:
                     tag = self._tag_builder.word_table[word]
                 else:
-                    return exceptions.Unexpected_Word_Error()
+                    raise exceptions.Unexpected_Word_Error('\'{}\' has no option or tag associated with --{}'.format(self._command_string, word))
             elif param.startswith('-'):
                 letter = param[1:]
                 if letter in self._option_builder.letter_table:
@@ -124,24 +135,36 @@ class Command(object):
                 elif letter in self._tag_builder.letter_table:
                     tag = self._tag_builder.letter_table[letter]
                 else:
-                    return exceptions.Unexpected_Letter_Error()
+                    raise exceptions.Unexpected_Letter_Error('\'{}\' has no option or tag associated with -{}'.format(self._command_string, letter))
 
             if option is not None:
                 param_ptr += 1
                 if param_ptr >= len(params):
-                    return exceptions.Invalid_Option_Error()
-                parsed_param = await option.parse(params[param_ptr])
-                if isinstance(parsed_param, exceptions.Parsing_Error):
+                    raise exceptions.Invalid_Option_Error('Option \'{}\' requires a value'.format(option.name))
+                parsed_param = None
+
+                try:
+                    parsed_param = await option.parse(params[param_ptr])
+                except exceptions.Discord_CLI_Error as e:
+                    raise type(e)('{} {}'.format(option.name, str(e)))
+
+                if isinstance(parsed_param, exceptions.Discord_CLI_Error):
                     return parsed_param
                 opts[option.name] = parsed_param
             elif tag is not None:
                 tags[tag.name] = True
             else:
                 if argument_ptr >= self._argument_builder.argument_count:
-                    return exceptions.Unexpected_Argument_Error()
+                    raise exceptions.Unexpected_Argument_Error('\'{}\' only expected {} arguments'.format(self._command_string, self._argument_builder.argument_count))
                 argument = self._argument_builder.arguments[argument_ptr]
-                parsed_param = await argument.parse(param)
-                if isinstance(parsed_param, exceptions.Parsing_Error):
+                parsed_param = None
+
+                try:
+                    parsed_param = await argument.parse(param)
+                except exceptions.Discord_CLI_Error as e:
+                    raise type(e)('{} {}'.format(argument.name, str(e)))
+
+                if isinstance(parsed_param, exceptions.Discord_CLI_Error):
                     return parsed_param
                 args[argument.name] = parsed_param
 
@@ -150,24 +173,22 @@ class Command(object):
             param_ptr += 1
         
         if argument_ptr < self._argument_builder.argument_count:
-            return exceptions.Expected_Arguments_Error()
+            raise exceptions.Expected_Arguments_Error('\'{}\' expected {} arguments, got {}'.format(self._command_string, self._argument_builder.argument_count, argument_ptr))
         
         return {**args, **opts, **tags}
 
     async def execute(self, client, message, params, *argv, **kwargs):
-        params = await self._parse_params(params)
-        if isinstance(params, exceptions.Parsing_Error):
-            return params
         if not callable(self._function):
-            return exceptions.Command_Not_Executable_Error()
+            raise exceptions.Command_Not_Executable_Error('No function is associated with \'{}\''.format(self._command_string))
+        params = await self._parse_params(params)
         return await self._function(client, message, params, *argv, **kwargs)
 
     def command(self, name, description = None, function = None):
         
         if self._argument_builder._first_is_text:
-            raise exceptions.Ambiguous_Parameter_Error
+            raise exceptions.Ambiguous_Parameter_Error('Cannot add sub commands to \'{}\' as it\'s first argument can contain text'.format(self._command_string))
         if name in self._sub_commands:
-            raise exceptions.Command_Already_Exists_Error
+            raise exceptions.Command_Already_Exists_Error('\'{}\' already exists'.format(self._command_string + ' ' + name))
         
         command_string = None
         if self._command_string is None:
