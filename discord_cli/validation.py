@@ -15,7 +15,7 @@ def validate_command_name(string):
 def validate_word(string):
     validate_string(string)
     if re.match('.*[^a-zA-Z].*', string):
-        raise exceptions.Value_Error('must represent an integer')
+        raise exceptions.Value_Error('must represent a word')
 
 def validate_float(string):
     validate_string(string)
@@ -29,7 +29,7 @@ def validate_integer(string):
     try:
         int(string)
     except ValueError:
-        raise exceptions.Value_Error('must only contain digits')
+        raise exceptions.Value_Error('must represent an integer')
 
 def validate_letter(string):
     validate_word(string)
@@ -95,7 +95,7 @@ async def async_validate_command_name(string):
 async def async_validate_word(string):
     await async_validate_string(string)
     if re.match('.*[^a-zA-Z].*', string):
-        raise exceptions.Value_Error('must represent an integer')
+        raise exceptions.Value_Error('must represent a word')
 
 async def async_validate_float(string):
     await async_validate_string(string)
@@ -109,7 +109,7 @@ async def async_validate_integer(string):
     try:
         int(string)
     except ValueError:
-        raise exceptions.Value_Error('must only contain digits')
+        raise exceptions.Value_Error('must represent an integer')
 
 async def async_validate_letter(string):
     await async_validate_word(string)
@@ -153,8 +153,3 @@ async def async_validate_time(string):
     await async_validate_string(string)
     if not re.match('\d\d:\d\d:\d\d', string):
         raise exceptions.Value_Error('must represent a time')
-
-async def async_validate_date_time(string):
-    await async_validate_string(string)
-    if not re.match('\d\d:\d\d:\d\d-\d\d/\d\d/\d\d\d\d', string):
-        raise exceptions.Value_Error('must represent a datetime')

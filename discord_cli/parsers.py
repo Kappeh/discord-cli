@@ -123,34 +123,35 @@ class Role_Mention_Parser(Base_Parser):
 # In the format %d/%m/%Y for now, may become customizable in future
 class Date_Parser(Base_Parser):
     
-    def __init__(self):
+    def __init__(self, min, max, include_min, include_max):
         super(Date_Parser, self).__init__()
+        self._min = min
+        self._max = max
+        self._include_min = include_min
+        self._include_max = include_max
     
     async def parse(self, input_string):
         await validation.async_validate_date(input_string)
-        return datetime.strftime(input_string, '%d/%m/%Y')
+        result = datetime.strptime(input_string, '%d/%m/%Y')
+        await validation.async_validate_bounds(result, self._min, self._max, self._include_min, self._include_max)
+        return result
 
 # Time
 # In the format %H:%M:%S for now, may become customizable in future
 class Time_Parser(Base_Parser):
 
-    def __init__(self):
+    def __init__(self, min, max, include_min, include_max):
         super(Time_Parser, self).__init__()
+        self._min = min
+        self._max = max
+        self._include_min = include_min
+        self._include_max = include_max
     
     async def parse(self, input_string):
         await validation.async_validate_time(input_string)
-        return datetime.srtftime(input_string, '%H:%M:%S')
-
-# DateTime
-# In the format %H:%M:%S-%d/%m/%Y for now, may become customizable in future
-class Datetime_Parser(Base_Parser):
-
-    def __init__(self):
-        super(Datetime_Parser, self).__init__()
-
-    async def parse(self, input_string):
-        await validation.async_validate_datetime(input_string)
-        return datetime.strftime(input_string, '%H:%M:%S-%d/%m/%Y')
+        result = datetime.strptime(input_string, '%H:%M:%S')
+        await validation.async_validate_bounds(result, self._min, self._max, self._include_min, self._include_max)
+        return result
 
 # Enum
 class Enum_Parser(Base_Parser):
@@ -172,3 +173,4 @@ class Enum_Parser(Base_Parser):
         await validation.async_validate_string(input_string)
         if input_string not in self._values:
             raise exceptions.Value_Error('must be element in {}'.format(str(self._values)))
+        return input_string

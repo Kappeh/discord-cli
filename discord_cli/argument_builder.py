@@ -63,6 +63,38 @@ class Argument_Builder(object):
             self._first_is_text = True
         self._add_argument(Argument(name, description, parsers.Word_Parser(min_length, max_length, include_min_length, include_max_length)))
     
+    def float(self, name, description = None, min = None, max = None, include_min = True, include_max = False):
+        self._add_argument(Argument(name, description, parsers.Float_Parser(min, max, include_min, include_max)))
+
+    def string(self, name, description = None, min_length = None, max_length = None, include_min_length = True, include_max_length = False):
+        if self._command.sub_command_count != 0:
+            raise exceptions.Ambiguous_Parameter_Error('Cannot add string argument to {} as it has sub commands'.format(self._command.command_string))
+        if self._argument_count == 0:
+            self._first_is_text = True
+        self._add_argument(Argument(name, description, parsers.String_Parser(min_length, max_length, include_min_length, include_max_length)))
+
+    def user_mention(self, name, description = None):
+        self._add_argument(Argument(name, description, parsers.User_Mention_Parser()))
+
+    def channel_mention(self, name, description = None):
+        self._add_argument(Argument(name, description, parsers.Channel_Mention_Parser()))
+
+    def role_mention(self, name, description = None):
+        self._add_argument(Argument(name, description, parsers.Role_Mention_Parser()))
+    
+    def date(self, name, description = None, min = None, max = None, include_min = True, include_max = False):
+        self._add_argument(Argument(name, description, parsers.Date_Parser(min, max, include_min, include_max)))
+    
+    def time(self, name, description = None, min = None, max = None, include_min = True, include_max = False):
+        self._add_argument(Argument(name, description, parsers.Time_Parser(min, max, include_min, include_max)))
+
+    def enum(self, name, values, description = None):
+        if self._command.sub_command_count != 0:
+            raise exceptions.Ambiguous_Parameter_Error('Cannot add enum argument to {} as it has sub commands'.format(self._command.command_string))
+        if self._argument_count == 0:
+            self._first_is_text = True
+        self._add_argument(Argument(name, description, parsers.Enum_Parser(values)))
+
     @property
     def arguments(self):
         return self._arguments

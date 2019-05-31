@@ -27,14 +27,12 @@ class Command_System(object):
 
         # Joining elements with escaped space
         for i in range(len(elements) - 1):
-            if len(elements[i + 1]) == 0:
-                continue
-            first_from_next = elements[i + 1].pop(0)
-
             if len(elements[i]) == 0:
-                elements[i].append(first_from_next)
+                continue
+            if len(elements[i + 1]) == 0:
+                elements[i + 1].append(elements[i].pop(-1))
             else:
-                elements[i][-1] += ' ' + first_from_next
+                elements[i + 1][0] = elements[i].pop(-1) + ' ' + elements[i + 1][0]
 
         # Combining into one list
         result = []

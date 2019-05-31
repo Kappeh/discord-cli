@@ -99,6 +99,30 @@ class Option_Builder(object):
     def word(self, name, description = None, letter = None, word = None, min_length = None, max_length = None, include_min_length = True, include_max_length = False):
         self._add_option(Option(name, description, letter, word, parsers.Word_Parser(min_length, max_length, include_min_length, include_max_length)))
     
+    def float(self, name, description = None, letter = None, word = None, min = None, max = None, include_min = True, include_max = False):
+        self._add_option(Option(name, description, letter, word, parsers.Float_Parser(min, max, include_min, include_max)))
+
+    def string(self, name, description = None, letter = None, word = None, min_length = None, max_length = None, include_min_length = True, include_max_length = False):
+        self._add_option(Option(name, description, letter, word, parsers.String_Parser(min_length, max_length, include_min_length, include_max_length)))
+
+    def user_mention(self, name, description = None, letter = None, word = None):
+        self._add_option(Option(name, description, letter, word, parsers.User_Mention_Parser()))
+
+    def channel_mention(self, name, description = None, letter = None, word = None):
+        self._add_option(Option(name, description, letter, word, parsers.Channel_Mention_Parser()))
+
+    def role_mention(self, name, description = None, letter = None, word = None):
+        self._add_option(Option(name, description, letter, word, parsers.Role_Mention_Parser()))
+    
+    def date(self, name, description = None, letter = None, word = None, min = None, max = None, include_min = True, include_max = False):
+        self._add_option(Option(name, description, letter, word, parsers.Date_Parser(min, max, include_min, include_max)))
+    
+    def time(self, name, description = None, letter = None, word = None, min = None, max = None, include_min = True, include_max = False):
+        self._add_option(Option(name, description, letter, word, parsers.Time_Parser(min, max, include_min, include_max)))
+
+    def enum(self, name, values, description = None, letter = None, word = None):
+        self._add_option(Option(name, description, letter, word, parsers.Enum_Parser(values)))
+
     @property
     def options(self):
         return self._options
