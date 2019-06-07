@@ -56,4 +56,4 @@ class Command_System(object):
         cmd, params = cmd_params
         if cmd is self._root:
             raise exceptions.Command_Not_Found_Error('Command not found')
-        return await cmd.usage_message(client, message, command_string)
+        return await cmd.usage_message(client, message)

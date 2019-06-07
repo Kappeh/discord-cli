@@ -187,17 +187,13 @@ class Command(object):
         return await self._function(client, message, params, *argv, **kwargs)
 
     def command(self, name, description = None, function = None):
-        
         if self._argument_builder._first_is_text:
             raise exceptions.Ambiguous_Parameter_Error('Cannot add sub commands to \'{}\' as it\'s first argument can contain text'.format(self._command_string))
+        
+        validation.validate_command_name(name)
         if name in self._sub_commands:
             raise exceptions.Command_Already_Exists_Error('\'{}\' already exists'.format(self._command_string + ' ' + name))
-        
-        command_string = None
-        if self._command_string is None:
-            command_string = name
-        else:
-            command_string = self._command_string + ' ' + name
+        command_string = name if self._command_string is None else self._command_string + ' ' + name
 
         self._sub_commands[name] = Command(name, description, command_string = command_string, parent = self, function = function)
         self._sub_command_count += 1
@@ -217,7 +213,7 @@ class Command(object):
         
         return result
     
-    async def usage_message(self, client, message, command_string):
+    async def usage_message(self, client, message):
         lines = []
         
         params = []

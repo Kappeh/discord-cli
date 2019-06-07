@@ -6,7 +6,8 @@ from datetime import datetime
 class Base_Parser(object):
     
     def __init__(self):
-        pass
+        if self.__class__ == Base_Parser:
+            raise exceptions.Cannot_Create_Instance_Of_Base_Class_Error('Cannot create instance of Base_Parser')
     
     async def parse(self, input_string):
         raise NotImplementedError
@@ -15,8 +16,33 @@ class Integer_Parser(Base_Parser):
     
     def __init__(self, min, max, include_min, include_max):
         super(Integer_Parser, self).__init__()
-        self._min = min
-        self._max = max
+
+        if min is not None:
+            try:
+                validation.validate_integer(min)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('min {}'.format(str(e)))
+            self._min = int(min)
+        else:
+            self._min = None
+        
+        if max is not None:
+            try:
+                validation.validate_integer(max)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('max {}'.format(str(e)))
+            self._max = int(max)
+        else:
+            self._max = None
+
+        if self._min is not None and self._max is not None and self.min > self.max:
+            raise exceptions.Value_Error('min cannot be greater than max')
+
+        if not isinstance(include_min, bool):
+            raise exceptions.Type_Error('include_min expected bool instance, {} found'.format(include_min.__class__.__name__))
+        if not isinstance(include_max, bool):
+            raise exceptions.Type_Error('include_max expected bool instance, {} found'.format(include_max.__class__.__name__))
+
         self._include_min = include_min
         self._include_max = include_max
     
@@ -31,8 +57,33 @@ class Word_Parser(Base_Parser):
 
     def __init__(self, min_length, max_length, include_min_length, include_max_length):
         super(Word_Parser, self).__init__()
-        self._min_length = min_length
-        self._max_length = max_length
+
+        if min_length is not None:
+            try:
+                validation.validate_integer(min_length)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('min_length {}'.format(str(e)))
+            self._min_length = int(min_length)
+        else:
+            self._min_length = None
+        
+        if max_length is not None:
+            try:
+                validation.validate_integer(max_length)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('max_length {}'.format(str(e)))
+            self._max_length = int(max_length)
+        else:
+            self._max_length = None
+
+        if self._min_length is not None and self._max_length is not None and self.min_length > self.max_length:
+            raise exceptions.Value_Error('min_length cannot be greater than max_length')
+
+        if not isinstance(include_min_length, bool):
+            raise exceptions.Type_Error('include_min_length expected bool instance, {} found'.format(include_min_length.__class__.__name__))
+        if not isinstance(include_max_length, bool):
+            raise exceptions.Type_Error('include_max_length expected bool instance, {} found'.format(include_max_length.__class__.__name__))
+
         self._include_min_length = include_min_length
         self._include_max_length = include_max_length
     
@@ -49,8 +100,33 @@ class Float_Parser(Base_Parser):
 
     def __init__(self, min, max, include_min, include_max):
         super(Float_Parser, self).__init__()
-        self._min = min
-        self._max = max
+        
+        if min is not None:
+            try:
+                validation.validate_integer(min)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('min {}'.format(str(e)))
+            self._min = int(min)
+        else:
+            self._min = None
+        
+        if max is not None:
+            try:
+                validation.validate_integer(max)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('max {}'.format(str(e)))
+            self._max = int(max)
+        else:
+            self._max = None
+
+        if self._min is not None and self._max is not None and self.min > self.max:
+            raise exceptions.Value_Error('min cannot be greater than max')
+
+        if not isinstance(include_min, bool):
+            raise exceptions.Type_Error('include_min expected bool instance, {} found'.format(include_min.__class__.__name__))
+        if not isinstance(include_max, bool):
+            raise exceptions.Type_Error('include_max expected bool instance, {} found'.format(include_max.__class__.__name__))
+
         self._include_min = include_min
         self._include_max = include_max
     
@@ -65,8 +141,33 @@ class String_Parser(Base_Parser):
 
     def __init__(self, min_length, max_length, include_min_length, include_max_length):
         super(String_Parser, self).__init__()
-        self._min_length = min_length
-        self._max_length = max_length
+        
+        if min_length is not None:
+            try:
+                validation.validate_integer(min_length)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('min_length {}'.format(str(e)))
+            self._min_length = int(min_length)
+        else:
+            self._min_length = None
+        
+        if max_length is not None:
+            try:
+                validation.validate_integer(max_length)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('max_length {}'.format(str(e)))
+            self._max_length = int(max_length)
+        else:
+            self._max_length = None
+
+        if self._min_length is not None and self._max_length is not None and self.min_length > self.max_length:
+            raise exceptions.Value_Error('min_length cannot be greater than max_length')
+
+        if not isinstance(include_min_length, bool):
+            raise exceptions.Type_Error('include_min_length expected bool instance, {} found'.format(include_min_length.__class__.__name__))
+        if not isinstance(include_max_length, bool):
+            raise exceptions.Type_Error('include_max_length expected bool instance, {} found'.format(include_max_length.__class__.__name__))
+
         self._include_min_length = include_min_length
         self._include_max_length = include_max_length
     
@@ -125,8 +226,33 @@ class Date_Parser(Base_Parser):
     
     def __init__(self, min, max, include_min, include_max):
         super(Date_Parser, self).__init__()
-        self._min = min
-        self._max = max
+        
+        if min is not None:
+            try:
+                validation.validate_date(min)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('min {}'.format(str(e)))
+            self._min = datetime.strptime(min, '%d/%m/%Y')
+        else:
+            self._min = None
+        
+        if max is not None:
+            try:
+                validation.validate_date(max)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('max {}'.format(str(e)))
+            self._max = datetime.strptime(max, '%d/%m/%Y')
+        else:
+            self._max = None
+
+        if self._min is not None and self._max is not None and self.min > self.max:
+            raise exceptions.Value_Error('min cannot be greater than max')
+
+        if not isinstance(include_min, bool):
+            raise exceptions.Type_Error('include_min expected bool instance, {} found'.format(include_min.__class__.__name__))
+        if not isinstance(include_max, bool):
+            raise exceptions.Type_Error('include_max expected bool instance, {} found'.format(include_max.__class__.__name__))
+
         self._include_min = include_min
         self._include_max = include_max
     
@@ -142,8 +268,33 @@ class Time_Parser(Base_Parser):
 
     def __init__(self, min, max, include_min, include_max):
         super(Time_Parser, self).__init__()
-        self._min = min
-        self._max = max
+        
+        if min is not None:
+            try:
+                validation.validate_time(min)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('min {}'.format(str(e)))
+            self._min = datetime.strptime(min, '%H:%M:%S')
+        else:
+            self._min = None
+        
+        if max is not None:
+            try:
+                validation.validate_time(max)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('max {}'.format(str(e)))
+            self._max = datetime.strptime(max, '%H:%M:%S')
+        else:
+            self._max = None
+
+        if self._min is not None and self._max is not None and self.min > self.max:
+            raise exceptions.Value_Error('min cannot be greater than max')
+
+        if not isinstance(include_min, bool):
+            raise exceptions.Type_Error('include_min expected bool instance, {} found'.format(include_min.__class__.__name__))
+        if not isinstance(include_max, bool):
+            raise exceptions.Type_Error('include_max expected bool instance, {} found'.format(include_max.__class__.__name__))
+
         self._include_min = include_min
         self._include_max = include_max
     

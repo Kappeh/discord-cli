@@ -17,3 +17,4 @@ class Name_Already_In_Use_Error(Discord_CLI_Error): pass
 class Letter_Already_In_Use_Error(Discord_CLI_Error): pass
 class Word_Already_In_Use_Error(Discord_CLI_Error): pass
 class Not_Async_Function_Error(Discord_CLI_Error): pass
+class Cannot_Create_Instance_Of_Base_Class_Error(Discord_CLI_Error): pass

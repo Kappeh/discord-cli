@@ -1,8 +1,10 @@
 from inspect import iscoroutinefunction
+import discord_cli.exceptions as exceptions
 
 class Base_Permission(object):
     def __init__(self):
-        pass
+        if self.__class__ == Base_Permission:
+            raise exceptions.Cannot_Create_Instance_Of_Base_Class_Error('Cannot create instance of Base_Permission')
     def __and__(self, other):
         return And_Permission_Operator(self, other)
     def __or__(self, other):
@@ -12,7 +14,16 @@ class Base_Permission(object):
 
 class Permission_Operator(Base_Permission):
     def __init__(self, perm1, perm2):
+        if self.__class__ == Permission_Operator:
+            raise exceptions.Cannot_Create_Instance_Of_Base_Class_Error('Cannot create instance of Permission_Operator')
+
         super(Permission_Operator, self).__init__()
+
+        if not isinstance(perm1, Base_Permission):
+            raise exceptions.Type_Error('Permission operator perm1 expected Base_Permission instance, {} found'.format(perm1.__class__.__name__))
+        if not isinstance(perm2, Base_Permission):
+            raise exceptions.Type_Error('Permission operator perm2 expected Base_Permission instance, {} found'.format(perm1.__class__.__name__))
+
         self._perm1 = perm1
         self._perm2 = perm2
 
@@ -30,6 +41,9 @@ class Or_Permission_Operator(Permission_Operator):
 
 class Permission_Operand(Base_Permission):
     def __init__(self):
+        if self.__class__ == Permission_Operand:
+            raise exceptions.Cannot_Create_Instance_Of_Base_Class_Error('Cannot create instance of Permission_Operand')
+
         super(Permission_Operand, self).__init__()
 
 class User_Permission(Permission_Operand):

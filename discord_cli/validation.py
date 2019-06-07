@@ -18,14 +18,12 @@ def validate_word(string):
         raise exceptions.Value_Error('must represent a word')
 
 def validate_float(string):
-    validate_string(string)
     try:
         float(string)
     except ValueError:
         raise exceptions.Value_Error('must represent a float')
 
 def validate_integer(string):
-    validate_string(string)
     try:
         int(string)
     except ValueError:
@@ -33,7 +31,7 @@ def validate_integer(string):
 
 def validate_letter(string):
     validate_word(string)
-    if len(string) > 1:
+    if len(string) != 1:
         raise exceptions.Value_Error('must have length 1')
 
 def validate_bounds(value, min, max, include_min, inlucde_max):
