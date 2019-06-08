@@ -160,22 +160,6 @@ class View_Audit_Log(Discord_Permission):
     def __str__(self):
         return 'view_audit_log'
 
-class Priority_Speaker(Discord_Permission):
-    def __init__(self):
-        super(Priority_Speaker, self).__init__()
-    async def evaluate(self, client, message):
-        return message.author.permissions_in(message.channel).priority_speaker
-    def __str__(self):
-        return 'priority_speaker'
-
-class Stream(Discord_Permission):
-    def __init__(self):
-        super(Stream, self).__init__()
-    async def evaluate(self, client, message):
-        return message.author.permissions_in(message.channel).stream
-    def __str__(self):
-        return 'stream'
-
 class Read_Messages(Discord_Permission):
     def __init__(self):
         super(Read_Messages, self).__init__()
@@ -247,54 +231,6 @@ class External_Emojis(Discord_Permission):
         return message.author.permissions_in(message.channel).external_emojis
     def __str__(self):
         return 'external_emojis'
-
-class Connect(Discord_Permission):
-    def __init__(self):
-        super(Connect, self).__init__()
-    async def evaluate(self, client, message):
-        return message.author.permissions_in(message.channel).connect
-    def __str__(self):
-        return 'connect'
-
-class Speak(Discord_Permission):
-    def __init__(self):
-        super(Speak, self).__init__()
-    async def evaluate(self, client, message):
-        return message.author.permissions_in(message.channel).speak
-    def __str__(self):
-        return 'speak'
-
-class Mute_Members(Discord_Permission):
-    def __init__(self):
-        super(Mute_Members, self).__init__()
-    async def evaluate(self, client, message):
-        return message.author.permissions_in(message.channel).mute_members
-    def __str__(self):
-        return 'mute_members'
-
-class Deafen_Members(Discord_Permission):
-    def __init__(self):
-        super(Deafen_Members, self).__init__()
-    async def evaluate(self, client, message):
-        return message.author.permissions_in(message.channel).deafen_members
-    def __str__(self):
-        return 'deafen_members'
-
-class Move_Members(Discord_Permission):
-    def __init__(self):
-        super(Move_Members, self).__init__()
-    async def evaluate(self, client, message):
-        return message.author.permissions_in(message.channel).move_members
-    def __str__(self):
-        return 'move_members'
-
-class Use_Voice_Activation(Discord_Permission):
-    def __init__(self):
-        super(Use_Voice_Activation, self).__init__()
-    async def evaluate(self, client, message):
-        return message.author.permissions_in(message.channel).use_voice_activation
-    def __str__(self):
-        return 'use_voice_activation'
 
 class Change_Nickname(Discord_Permission):
     def __init__(self):
