@@ -53,6 +53,9 @@ class Integer_Parser(Base_Parser):
         await validation.async_validate_bounds(result, self._min, self._max, self._include_min, self._include_max)
         return result
     
+    def __str__(self):
+        return 'integer'
+    
 class Word_Parser(Base_Parser):
 
     def __init__(self, min_length, max_length, include_min_length, include_max_length):
@@ -94,6 +97,9 @@ class Word_Parser(Base_Parser):
         except exceptions.Discord_CLI_Error as e:
             raise type(e)('length {}'.format(str(e)))
         return input_string
+    
+    def __str__(self):
+        return 'word'
 
 # Float
 class Float_Parser(Base_Parser):
@@ -135,6 +141,9 @@ class Float_Parser(Base_Parser):
         result = float(input_string)
         await validation.async_validate_bounds(result, self._min, self._max, self._include_min, self._include_max)
         return result
+    
+    def __str__(self):
+        return 'float'
 
 # String
 class String_Parser(Base_Parser):
@@ -178,6 +187,9 @@ class String_Parser(Base_Parser):
         except exceptions.Discord_CLI_Error as e:
             raise type(e)('length {}'.format(str(e)))
         return input_string
+    
+    def __str__(self):
+        return 'string'
 
 # User Mention
 # Without nickname      <@95584437231689728>
@@ -192,6 +204,9 @@ class User_Mention_Parser(Base_Parser):
         for c in '<@!>':
             input_string = input_string.replace(c, '')
         return int(input_string)
+    
+    def __str__(self):
+        return 'user_mention'
 
 # Channel Mention
 # <#291649024409468928>
@@ -206,6 +221,9 @@ class Channel_Mention_Parser(Base_Parser):
         for c in '<#>':
             input_string = input_string.replace(c, '')
         return int(input_string)
+    
+    def __str__(self):
+        return 'channel_mention'
 
 # Role Mention
 # <@&357235474869387276>
@@ -219,6 +237,9 @@ class Role_Mention_Parser(Base_Parser):
         for c in '<@&>':
             input_string = input_string.replace(c, '')
         return int(input_string)
+    
+    def __str__(self):
+        return 'role_mention'
 
 # Date
 # In the format %d/%m/%Y for now, may become customizable in future
@@ -261,6 +282,9 @@ class Date_Parser(Base_Parser):
         result = datetime.strptime(input_string, '%d/%m/%Y')
         await validation.async_validate_bounds(result, self._min, self._max, self._include_min, self._include_max)
         return result
+    
+    def __str__(self):
+        return 'date'
 
 # Time
 # In the format %H:%M:%S for now, may become customizable in future
@@ -303,6 +327,9 @@ class Time_Parser(Base_Parser):
         result = datetime.strptime(input_string, '%H:%M:%S')
         await validation.async_validate_bounds(result, self._min, self._max, self._include_min, self._include_max)
         return result
+    
+    def __str__(self):
+        return 'time'
 
 # Enum
 class Enum_Parser(Base_Parser):
@@ -325,3 +352,6 @@ class Enum_Parser(Base_Parser):
         if input_string not in self._values:
             raise exceptions.Value_Error('must be element in {}'.format(str(self._values)))
         return input_string
+    
+    def __str__(self):
+        return 'enum'

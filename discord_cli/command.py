@@ -203,8 +203,29 @@ class Command(object):
         result = ''
         if include_name:
             result += prefix + self._name + '\n'
-
-        # Add details here when implimented
+        
+        command_prefix = prefix + '| ' if self._sub_command_count != 0 else prefix + '  '
+        
+        if details:
+            if self._argument_builder.argument_count != 0:
+                result += command_prefix + 'Arguments:\n'
+                for arg in self._argument_builder.arguments:
+                    result += command_prefix + '  ' + str(arg) + '\n'
+            
+            if self._option_builder.option_count != 0:
+                result += command_prefix + 'Options:\n'
+                for opt in self._option_builder.options:
+                    result += command_prefix + '  ' + str(opt) + '\n'
+            
+            if self._tag_builder.tag_count != 0:
+                result += command_prefix + 'Tags:\n'
+                for tag in self._tag_builder.tags:
+                    result += command_prefix + '  ' + str(tag) + '\n'
+            
+            if self._permission_builder.permission_count != 0:
+                result += command_prefix + 'Pemrissions:\n'
+                for perm in self._permission_builder.permissions:
+                    result += command_prefix + '  ' + str(perm) + '\n'
 
         for i, (command_name, command_obj) in enumerate(self._sub_commands.items()):
             result += '{0}| \n{0}+-+ {1}\n'.format(prefix, command_name)

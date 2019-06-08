@@ -33,6 +33,12 @@ class Argument(object):
     async def parse(self, input_string):
         return await self._parser.parse(input_string)
     
+    def __str__(self):
+        elements = ['{}:{}'.format(self._name, str(self._parser))]
+        if self._description is not None:
+            elements.append(self._description)
+        return ' | '.join(elements)
+    
 class Argument_Builder(object):
 
     def __init__(self, command):
@@ -53,7 +59,7 @@ class Argument_Builder(object):
         self._name_table[argument.name] = argument
         self._argument_count += 1
 
-    def integer(self, name, description = None, min = None, max = None, include_min = None, include_max = None):
+    def integer(self, name, description = None, min = None, max = None, include_min = True, include_max = False):
         self._add_argument(Argument(name, description, parsers.Integer_Parser(min, max, include_min, include_max)))
     
     def word(self, name, description = None, min_length = None, max_length = None, include_min_length = True, include_max_length = False):

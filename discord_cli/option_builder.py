@@ -57,6 +57,14 @@ class Option(object):
     async def parse(self, input_string):
         return await self._parser.parse(input_string)
 
+    def __str__(self):
+        elements = ['{}:{}'.format(self._name, str(self._parser)), '-' + self._letter]
+        if self._word is not None:
+            elements.append('--' + self._word)
+        if self._description is not None:
+            elements.append(self._description)
+        return ' | '.join(elements)
+
 class Option_Builder(object):
     
     def __init__(self, command):

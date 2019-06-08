@@ -49,6 +49,14 @@ class Tag(object):
     @property
     def word(self):
         return self._word
+    
+    def __str__(self):
+        elements = [self._name, '-' + self._letter]
+        if self._word is not None:
+            elements.append('--' + self._word)
+        if self._description is not None:
+            elements.append(self._description)
+        return ' | '.join(elements)
 
 class Tag_Builder(object):
 
