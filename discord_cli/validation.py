@@ -36,15 +36,15 @@ def validate_letter(string):
 
 def validate_bounds(value, min, max, include_min, inlucde_max):
     if min is not None:
-        if include_min == False and result <= min:
+        if include_min == False and value <= min:
             raise exceptions.Value_Error('must be greater than {}'.format(min))
-        if result < min:
+        if value < min:
             raise exceptions.Value_Error('cannot be less than {}'.format(min))
     
     if max is not None:
-        if include_max == False and result >= max:
+        if include_max == False and value >= max:
             raise exceptions.Value_Error('must be less than {}'.format(min))
-        if result > max:
+        if value > max:
             raise exceptions.Value_Error('cannot be greater than {}'.format(max))
 
 def validate_user_mention(string):
@@ -116,15 +116,15 @@ async def async_validate_letter(string):
 
 async def async_validate_bounds(value, min, max, include_min, inlucde_max):
     if min is not None:
-        if include_min == False and result <= min:
+        if include_min == False and value <= min:
             raise exceptions.Value_Error('must be greater than {}'.format(min))
-        if result < min:
+        if value < min:
             raise exceptions.Value_Error('cannot be less than {}'.format(min))
     
     if max is not None:
-        if include_max == False and result >= max:
+        if include_max == False and value >= max:
             raise exceptions.Value_Error('must be less than {}'.format(min))
-        if result > max:
+        if value > max:
             raise exceptions.Value_Error('cannot be greater than {}'.format(max))
 
 async def async_validate_user_mention(string):
