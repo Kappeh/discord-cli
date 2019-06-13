@@ -10,9 +10,28 @@ from discord_cli.permission_builder import Permission_Builder
 
 class Command(object):
 
+    """
+    A command object represents a single command. Commands can be executable. If they are,
+    they contain an function and can contain arguments, options and tags.
+
+    All commands can contain: permissions which restrict who can see and execute the command and
+    a description which explains what the command / command tree is used for.
+
+    All commands can also contain sub commands. For example, `git add` is a sub command of `git`.
+    """
+
     # Should only be called from within the package
     def __init__(self, name, description = None, parent = None, command_string = None, function = None):
-        
+        """
+        name            : str                                   - The name of the command
+        description     : str | None                            - A description for the command
+        parent          : discord_cli.command.Command | None    - The parent command of the command
+        command_string  : str | None                            - The full command identifier including ancestor commands' names
+        function        : function | None                       - The executable function associated with this command
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
+        """
+
         try:
             validation.validate_command_name(name)
         except exceptions.Discord_CLI_Error as e:
@@ -45,51 +64,113 @@ class Command(object):
     
     @property
     def parent(self):
+        """
+        Returns : discord_cli.command.Command - The parent command of this command
+        """
+
         return self._parent
 
     @property
     def name(self):
+        """
+        Returns : str - The name of this command
+        """
+
         return self._name
     
     @property
     def description(self):
+        """
+        Returns : str - A description for this command
+        """
+
         return self._description
     
     @property
     def command_string(self):
+        """
+        Returns : str - The full command identifier including ancestor commands' names
+        """
+        
         return self._command_string
 
     @property
     def sub_commands(self):
+        """
+        Returns : list - A list containing all of the sub commands of this command
+        """
+
         return self._sub_commands
     
     @property
     def sub_command_count(self):
+        """
+        Returns : int - The amount of sub commands that belong to this command
+        """
+
         return self._sub_command_count
 
     @property
     def function(self):
-        return self._function
+        """
+        Returns : function - The executable function associated with this command
+        """
 
-    # Adding parameters and permissions ======================================================
+        return self._function
     
     @property
     def argument(self):
+        """
+        Returns : discord_cli.argument_builder.Argument_Builder - The argument builder for this command
+        """
+
         return self._argument_builder
 
     @property
     def option(self):
+        """
+        Returns : discord_cli.option_builder.Option_Builder - The option builder for this command
+        """
+
         return self._option_builder
     
     def tag(self, name, description = None, letter = None, word = None):
+        """
+        Adds a tag to the command
+
+        name            : str           - The name of the tag
+        description     : str | None    - A description of the tags purpose
+        letter          : str | None    - The letter identifier for the tag (If None, set to the first letter of the name)
+        word            : str | None    - The word identifier for the tag
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
+        """
+
         self._tag_builder.tag(name, description, letter, word)
     
     def permission(self, permission):
+        """
+        Adds a permission to the command
+
+        permission : discord_cli.permissions.Base_Permission - The permisison to be added to the command
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid     
+        """
+
         self._permission_builder.permission(permission)
 
-    # ========================================================================================
-
     async def get_command(self, client, message, *argv):
+        """
+        Gets a command specified by identifiers in argv and returns the elements in argv which are parameters
+
+        client  : discord.Client                    - The discord bot client
+        message : discord.Message                   - A message from a user in a channel to specify permissions
+        argv                                        - The elements of the command string
+        Returns : discord_cli.command.Command, list - The command, the remaining elements
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid or user does not have sufficient permissions for command
+        """
+
         if len(argv) == 0:
             return self, []
         if argv[0] in self._sub_commands:
@@ -100,6 +181,15 @@ class Command(object):
         return self, argv
 
     async def _parse_params(self, params):
+        """
+        Takes the parameters inputted as strings and parses them into the correct types and
+        assigns them to the correct argument, option and tag identifiers
+
+        params : list - A list of strings which represent the inputted parameters
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
+        """
+
         args = {}
         opts = {}
         tags = {}
@@ -181,12 +271,36 @@ class Command(object):
         return {**args, **opts, **tags}
 
     async def execute(self, client, message, params, *argv, **kwargs):
+        """
+        Executes this command's function
+
+        client  : discord.Client    - The discord bot client
+        message : discord.Message   - The message which contained the command string
+        params  : list              - A list of strings containing the parameter input strings
+        argv                        - The arguments to be passed to the command function
+        kwargs                      - The keyword arguments to be passed to the command function
+        Returns : object            - The returned value from the command's function
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
+        """
+
         if not callable(self._function):
             raise exceptions.Command_Not_Executable_Error('No function is associated with \'{}\''.format(self._command_string))
         params = await self._parse_params(params)
         return await self._function(client, message, params, *argv, **kwargs)
 
     def command(self, name, description = None, function = None):
+        """
+        Adds a sub command to this command
+
+        name        : str                           - The name of the sub command
+        description : str | None                    - A description for the sub command
+        function    : function | None               - The sub command's function
+        Returns     : discord_cli.command.Command   - The new sub command
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
+        """
+        
         if self._argument_builder._first_is_text:
             raise exceptions.Ambiguous_Parameter_Error('Cannot add sub commands to \'{}\' as it\'s first argument can contain text'.format(self._command_string))
         
@@ -200,9 +314,18 @@ class Command(object):
         return self._sub_commands[name]
 
     def tree_string(self, details = False, prefix = '', include_name = True):
+        """
+        Gets a string representing the command tree with this command as the root node
+
+        details         : bool  - Whether to show arguments, options, tags and permissions for commands
+        prefix          : str   - A string to add to the beginning of each line
+        include_name    : bool  - Whether to include the root node command name at the top of the tree
+        Returns         : str   - A string representing the command tree
+        """
+
         result = ''
         if include_name:
-            result += prefix + self._name + '\n'
+            result += prefix + '+ ' + self._name + '\n'
         
         command_prefix = prefix + '| ' if self._sub_command_count != 0 else prefix + '  '
         
@@ -235,6 +358,14 @@ class Command(object):
         return result
     
     async def usage_message(self, client, message):
+        """
+        Gets a string which represents a usage message for this command
+
+        client  : discord.Client    - The discord bot client 
+        message : discord.Message   - A message from a user in a channel to specify permissions 
+        Returns : str               - The usage message string
+        """
+
         lines = []
         
         params = []
@@ -275,7 +406,7 @@ class Command(object):
                 if tag.word is not None:
                     tmp.append('--' + tag.word)
                 if tag.description is not None:
-                    tag.append(tag.description)
+                    tags.append(tag.description)
                 lines.append('  ' + ' | '.join(tmp))
         
         if self._sub_command_count != 0:

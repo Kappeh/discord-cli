@@ -3,7 +3,20 @@ import discord_cli.exceptions as exceptions
 
 class Tag(object):
 
+    """
+    The tag class represents a single tag that is a component of a command
+    """
+
     def __init__(self, name, description, letter, word):
+        """
+        name        : str           - The name of the tag
+        description : str | None    - A description of the tag
+        letter      : str | None    - The letter identifier of the tag (If None, the first letter of name is used)
+        word        : str | None    - The word identifier of the tag
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
+        """
+
         try:
             validation.validate_word(name)
         except exceptions.Discord_CLI_Error as e:
@@ -36,21 +49,43 @@ class Tag(object):
     
     @property
     def name(self):
+        """
+        Returns : str - The name of the tag
+        """
+
         return self._name
     
     @property
     def description(self):
+        """
+        Returns : str | None - A description of the tag
+        """
+
         return self._description
     
     @property
     def letter(self):
+        """
+        Returns : str - The letter identifier for the tag
+        """
+
         return self._letter
 
     @property
     def word(self):
+        """
+        Returns : str | None - The word identifier for the tag
+        """
+
         return self._word
     
     def __str__(self):
+        """
+        Returns : str - A string representation of the tag
+        
+        E.g. 'embed | -e | --embed | displays response in an embed'
+        """
+
         elements = [self._name, '-' + self._letter]
         if self._word is not None:
             elements.append('--' + self._word)
@@ -60,7 +95,15 @@ class Tag(object):
 
 class Tag_Builder(object):
 
+    """
+    The tag builder serves as a list of tags which belong to a command.
+    """
+
     def __init__(self, command):
+        """
+        command : discord_cli.command.Command - The command the tags belong to
+        """
+
         self._command = command
         
         self._tags = []
@@ -70,6 +113,17 @@ class Tag_Builder(object):
         self._tag_count = 0
     
     def tag(self, name, description, letter, word):
+        """
+        Adds a tag to the list of tags
+
+        name        : str           - The name of the tag
+        description : str | None    - A description of the tag
+        letter      : str | None    - The letter identifier of the tag (If None, the first letter of name is used)
+        word        : str | None    - The word identifier of the tag
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
+        """
+
         new_tag = Tag(name, description, letter, word)
 
         if new_tag.name in self._name_table:
@@ -97,20 +151,40 @@ class Tag_Builder(object):
     
     @property
     def tags(self):
+        """
+        Returns : list - The list of tags
+        """
+
         return self._tags
     
     @property
     def name_table(self):
+        """
+        Returns : dict - A dictionary which associates each name with the tag that has that name
+        """
+
         return self._name_table
 
     @property
     def letter_table(self):
+        """
+        Returns : dict - A dictionary which associates each letter identifier with the tag that has that letter identifier
+        """
+
         return self._letter_table
     
     @property
     def word_table(self):
+        """
+        Returns : dict - A dictionary which associates each word identifier with the tag that has that word identifier
+        """
+
         return self._word_table
 
     @property
     def tag_count(self):
+        """
+        Returns : int - The amount of tags in the list
+        """
+
         return self._tag_count
