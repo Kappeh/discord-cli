@@ -53,7 +53,7 @@ class Integer_Parser(Base_Parser):
         else:
             self._max = None
 
-        if self._min is not None and self._max is not None and self.min > self.max:
+        if self._min is not None and self._max is not None and self._min > self._max:
             raise exceptions.Value_Error('min cannot be greater than max')
 
         if not isinstance(include_min, bool):
@@ -118,7 +118,7 @@ class Word_Parser(Base_Parser):
         else:
             self._max_length = None
 
-        if self._min_length is not None and self._max_length is not None and self.min_length > self.max_length:
+        if self._min_length is not None and self._max_length is not None and self._min_length > self._max_length:
             raise exceptions.Value_Error('min_length cannot be greater than max_length')
 
         if not isinstance(include_min_length, bool):
@@ -186,7 +186,7 @@ class Float_Parser(Base_Parser):
         else:
             self._max = None
 
-        if self._min is not None and self._max is not None and self.min > self.max:
+        if self._min is not None and self._max is not None and self._min > self._max:
             raise exceptions.Value_Error('min cannot be greater than max')
 
         if not isinstance(include_min, bool):
@@ -252,7 +252,7 @@ class String_Parser(Base_Parser):
         else:
             self._max_length = None
 
-        if self._min_length is not None and self._max_length is not None and self.min_length > self.max_length:
+        if self._min_length is not None and self._max_length is not None and self._min_length > self._max_length:
             raise exceptions.Value_Error('min_length cannot be greater than max_length')
 
         if not isinstance(include_min_length, bool):
@@ -410,7 +410,7 @@ class Date_Parser(Base_Parser):
         else:
             self._max = None
 
-        if self._min is not None and self._max is not None and self.min > self.max:
+        if self._min is not None and self._max is not None and self._min > self._max:
             raise exceptions.Value_Error('min cannot be greater than max')
 
         if not isinstance(include_min, bool):
@@ -477,7 +477,7 @@ class Time_Parser(Base_Parser):
         else:
             self._max = None
 
-        if self._min is not None and self._max is not None and self.min > self.max:
+        if self._min is not None and self._max is not None and self._min > self._max:
             raise exceptions.Value_Error('min cannot be greater than max')
 
         if not isinstance(include_min, bool):
