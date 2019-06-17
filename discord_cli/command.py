@@ -20,7 +20,6 @@ class Command(object):
     All commands can also contain sub commands. For example, `git add` is a sub command of `git`.
     """
 
-    # Should only be called from within the package
     def __init__(self, name, description = None, parent = None, command_string = None, function = None):
         """
         name            : str                                   - The name of the command
@@ -122,7 +121,12 @@ class Command(object):
     def argument(self):
         """
         Returns : discord_cli.argument_builder.Argument_Builder - The argument builder for this command
+
+        Raises discord_cli.exceptions.Cannot_Add_Parameter_Error if command doesn't have function assigned to it
         """
+
+        if self._function is None:
+            raise exceptions.Cannot_Add_Parameters_Error('Can\'t add argument to command without function assigned to it')
 
         return self._argument_builder
 
@@ -130,7 +134,12 @@ class Command(object):
     def option(self):
         """
         Returns : discord_cli.option_builder.Option_Builder - The option builder for this command
+
+        Raises discord_cli.exceptions.Cannot_Add_Parameter_Error if command doesn't have function assigned to it
         """
+
+        if self._function is None:
+            raise exceptions.Cannot_Add_Parameters_Error('Can\'t add option to command without function assigned to it')
 
         return self._option_builder
     
@@ -143,8 +152,12 @@ class Command(object):
         letter          : str | None    - The letter identifier for the tag (If None, set to the first letter of the name)
         word            : str | None    - The word identifier for the tag
 
+        Raises discord_cli.exceptions.Cannot_Add_Parameter_Error if command doesn't have function assigned to it
         Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
         """
+
+        if self._function is None:
+            raise exceptions.Cannot_Add_Parameters_Error('Can\'t add tag to command without function assigned to it')
 
         self._tag_builder.tag(name, description, letter, word)
     
@@ -384,30 +397,17 @@ class Command(object):
         if self._argument_builder.argument_count != 0:
             lines.append('Arguments:')
             for arg in self._argument_builder.arguments:
-                tmp = [arg.name]
-                if arg.description is not None:
-                    tmp.append(arg.description)
-                lines.append('  ' + ' | '.join(tmp))
+                lines.append('  ' + str(arg))
         
         if self._option_builder.option_count != 0:
             lines.append('Options:')
             for opt in self._option_builder.options:
-                tmp = [opt.name, '-' + opt.letter]
-                if opt.word is not None:
-                    tmp.append('--' + opt.word)
-                if opt.description is not None:
-                    tmp.append(opt.description)
-                lines.append('  ' + ' | '.join(tmp))
+                lines.append('  ' + str(opt))
         
         if self._tag_builder.tag_count != 0:
             lines.append('Tags:')
             for tag in self._tag_builder.tags:
-                tmp = [tag.name, '-' + tag.letter]
-                if tag.word is not None:
-                    tmp.append('--' + tag.word)
-                if tag.description is not None:
-                    tags.append(tag.description)
-                lines.append('  ' + ' | '.join(tmp))
+                lines.append('  ' + str(tag))
         
         if self._sub_command_count != 0:
             first = True
