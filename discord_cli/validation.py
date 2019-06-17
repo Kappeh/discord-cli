@@ -82,7 +82,7 @@ def validate_letter(string):
     if len(string) != 1:
         raise exceptions.Value_Error('must have length 1')
 
-def validate_bounds(value, min, max, include_min, inlucde_max):
+def validate_bounds(value, min, max, include_min, include_max):
     """
     Checks if a value lies within an interval defined by a min and a max
 
@@ -102,7 +102,7 @@ def validate_bounds(value, min, max, include_min, inlucde_max):
     
     if max is not None:
         if include_max == False and value >= max:
-            raise exceptions.Value_Error('must be less than {}'.format(min))
+            raise exceptions.Value_Error('must be less than {}'.format(max))
         if value > max:
             raise exceptions.Value_Error('cannot be greater than {}'.format(max))
 
@@ -213,7 +213,7 @@ async def async_validate_letter(string):
     if len(string) > 1:
         raise exceptions.Value_Error('must have length 1')
 
-async def async_validate_bounds(value, min, max, include_min, inlucde_max):
+async def async_validate_bounds(value, min, max, include_min, include_max):
     if min is not None:
         if include_min == False and value <= min:
             raise exceptions.Value_Error('must be greater than {}'.format(min))
@@ -222,7 +222,7 @@ async def async_validate_bounds(value, min, max, include_min, inlucde_max):
     
     if max is not None:
         if include_max == False and value >= max:
-            raise exceptions.Value_Error('must be less than {}'.format(min))
+            raise exceptions.Value_Error('must be less than {}'.format(max))
         if value > max:
             raise exceptions.Value_Error('cannot be greater than {}'.format(max))
 
