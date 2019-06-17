@@ -192,95 +192,198 @@ class Command(object):
                 raise exceptions.Insufficient_Permissions_Error('Insufficient permissions')
             return await sub_command.get_command(client, message, *argv[1:])
         return self, argv
+    
+    async def _symbolize_params(self, params):
+        """
+        Changes the identifiers of options and tags to symbols
+
+        params  : list  - A list of strings which represent the inputted parameters
+        Returns : list  - The list after having symbols added to it
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are invalid
+        """
+
+        result = []
+        
+        for param in params:
+            option = False
+            tags = False
+            names = None
+
+            # If the parameter is a word identifier
+            if param.startswith('--'):
+                word = param.replace('-', '')
+                
+                if word in self._option_builder.word_table:
+                    option = True
+                    names = [self._option_builder.word_table[word].name]
+                
+                elif word in self._tag_builder.word_table:
+                    tags = True
+                    names = [self._tag_builder.word_table[word].name]
+                
+                else:
+                    raise exceptions.Unexpected_Word_Error('\'{}\' has no option or tag associated with --{}'.format(self._command_string, word))
+
+            # If the parameter is a letter identifier
+            elif param.startswith('-'):
+                letters = param.replace('-', '')
+                
+                if len(letters) == 1 and letters in self._option_builder.letter_table:
+                    option = True
+                    names = [self._option_builder.letter_table[letters].name]
+                
+                else:
+                    names = []
+                    tags = True
+                    for letter in letters:
+                        if letter in self._tag_builder.letter_table:
+                            names.append(self._tag_builder.letter_table[letter].name)
+                        
+                        else:
+                            raise exceptions.Unexpected_Letter_Error('\'{}\' has no option or tag associated with -{}'.format(self._command_string, letter))
+            
+            if option == True:
+                result.append('-OPTION:{}'.format(names[0]))
+            elif tags == True:
+                for name in names:
+                    result.append('-TAG:{}'.format(name))
+            else:
+                result.append(param)
+        
+        return result
+
+    async def _parse_args(self, params):
+        """
+        Finds all of the arguments in a command string
+
+        params  : list  - The symbolized list of parameters
+        Returns : dict  - A dictionary which relates an argument's name with it's value
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are invalid
+        """
+
+        args = {}
+
+        for arg in self._argument_builder.arguments:
+            args[arg.name] = None
+
+        param_ptr = 0
+        arg_ptr = 0
+
+        while param_ptr < len(params):
+            param = params[param_ptr]
+
+            if param.startswith('-OPTION:'):
+                param_ptr += 2
+                continue
+            
+            if param.startswith('-TAG:'):
+                param_ptr += 1
+                continue
+            
+            if arg_ptr == self._argument_builder.argument_count:
+                raise exceptions.Unexpected_Argument_Error('\'{}\' only expected {} arguments'.format(self._command_string, self._argument_builder.argument_count))
+
+            argument = self._argument_builder.arguments[arg_ptr]
+            try:
+                args[argument.name] = await argument.parse(param)
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('{} {}'.format(argument.name, str(e)))
+            
+            arg_ptr += 1
+            param_ptr += 1
+        
+        if arg_ptr != self._argument_builder.argument_count:
+            raise exceptions.Expected_Arguments_Error('\'{}\' expected {} arguments, got {}'.format(self._command_string, self._argument_builder.argument_count, arg_ptr))
+
+        return args
+    
+    async def _parse_opts(self, params):
+        """
+        Finds all of the options in a command string
+
+        params  : list  - The symbolized list of parameters
+        Returns : dict  - A dictionary which relates an option's name with it's value
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are invalid
+        """
+
+        opts = {}
+
+        for opt in self._option_builder.options:
+            opts[opt.name] = None
+
+        param_ptr = 0
+
+        while param_ptr < len(params):
+            param = params[param_ptr]
+
+            if not param.startswith('-OPTION:'):
+                param_ptr += 1
+                continue
+            
+            option = self._option_builder.name_table[param.replace('-OPTION:', '')]
+
+            param_ptr += 1
+            if param_ptr == len(params):
+                raise exceptions.Invalid_Option_Error('Option \'{}\' requires a value'.format(option.name))
+            
+            try:
+                opts[option.name] = await option.parse(params[param_ptr])
+            except exceptions.Discord_CLI_Error as e:
+                raise type(e)('{} {}'.format(option.name, str(e)))
+
+            param_ptr += 1
+        
+        return opts
+    
+    async def _parse_tags(self, params):
+        """
+        Finds all of the tags in a command string
+
+        params  : list  - The symbolized list of parameters
+        Returns : dict  - A dictionary which relates an tag's name with it's value
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are invalid
+        """
+
+        tags = {}
+
+        for tag in self._tag_builder.tags:
+            tags[tag.name] = False
+        
+        param_ptr = 0
+
+        while param_ptr < len(params):
+            param = params[param_ptr]
+
+            if not param.startswith('-TAG:'):
+                param_ptr += 1
+                continue
+            
+            tag_name = param.replace('-TAG:', '')
+            tags[tag_name] = True
+
+            param_ptr += 1
+        
+        return tags
 
     async def _parse_params(self, params):
         """
         Takes the parameters inputted as strings and parses them into the correct types and
         assigns them to the correct argument, option and tag identifiers
 
-        params : list - A list of strings which represent the inputted parameters
+        params  : list  - A list of strings which represent the inputted parameters
+        Returns : dict  - A dictionary which relates the name of a parameter to it's value
 
         Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
         """
 
-        args = {}
-        opts = {}
-        tags = {}
-
-        for arg in self._argument_builder.arguments:
-            args[arg.name] = None
-        for opt in self._option_builder.options:
-            opts[opt.name] = None
-        for tag in self._tag_builder.tags:
-            tags[tag.name] = False
-
-        # Parsing params
-        param_ptr = 0
-        argument_ptr = 0
-
-        while param_ptr < len(params):
-            param = params[param_ptr]
-            option = None
-            tag_list = []
-
-            if param.startswith('--'):
-                word = param[2:]
-                if word in self._option_builder.word_table:
-                    option = self._option_builder.word_table[word]
-                elif word in self._tag_builder.word_table:
-                    tag_list = [self._tag_builder.word_table[word]]
-                else:
-                    raise exceptions.Unexpected_Word_Error('\'{}\' has no option or tag associated with --{}'.format(self._command_string, word))
-            elif param.startswith('-'):
-                letters = param[1:]
-                if letters in self._option_builder.letter_table:
-                    option = self._option_builder.letter_table[letters]
-                else:
-                    for letter in letters:
-                        if letter in self._tag_builder.letter_table:
-                            tag_list.append(self._tag_builder.letter_table[letter])
-                        else:
-                            raise exceptions.Unexpected_Letter_Error('\'{}\' has no option or tag associated with -{}'.format(self._command_string, letter))
-
-            if option is not None:
-                param_ptr += 1
-                if param_ptr >= len(params):
-                    raise exceptions.Invalid_Option_Error('Option \'{}\' requires a value'.format(option.name))
-                parsed_param = None
-
-                try:
-                    parsed_param = await option.parse(params[param_ptr])
-                except exceptions.Discord_CLI_Error as e:
-                    raise type(e)('{} {}'.format(option.name, str(e)))
-
-                if isinstance(parsed_param, exceptions.Discord_CLI_Error):
-                    return parsed_param
-                opts[option.name] = parsed_param
-            elif len(tag_list) != 0:
-                for tag in tag_list:
-                    tags[tag.name] = True
-            else:
-                if argument_ptr >= self._argument_builder.argument_count:
-                    raise exceptions.Unexpected_Argument_Error('\'{}\' only expected {} arguments'.format(self._command_string, self._argument_builder.argument_count))
-                argument = self._argument_builder.arguments[argument_ptr]
-                parsed_param = None
-
-                try:
-                    parsed_param = await argument.parse(param)
-                except exceptions.Discord_CLI_Error as e:
-                    raise type(e)('{} {}'.format(argument.name, str(e)))
-
-                if isinstance(parsed_param, exceptions.Discord_CLI_Error):
-                    return parsed_param
-                args[argument.name] = parsed_param
-
-                argument_ptr += 1
-
-            param_ptr += 1
-        
-        if argument_ptr < self._argument_builder.argument_count:
-            raise exceptions.Expected_Arguments_Error('\'{}\' expected {} arguments, got {}'.format(self._command_string, self._argument_builder.argument_count, argument_ptr))
-        
+        symbolized_params = await self._symbolize_params(params)
+        args = await self._parse_args(symbolized_params)
+        opts = await self._parse_opts(symbolized_params)
+        tags = await self._parse_tags(symbolized_params)
         return {**args, **opts, **tags}
 
     async def execute(self, client, message, params, *argv, **kwargs):
