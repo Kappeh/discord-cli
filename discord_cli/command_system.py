@@ -1,5 +1,8 @@
+import discord
+
 from discord_cli.command import Command
 import discord_cli.exceptions as exceptions
+from inspect import iscoroutinefunction
 
 class Command_System(object):
 
@@ -16,7 +19,21 @@ class Command_System(object):
         """
 
         self._root = Command(name, description)
+        self._execution_error_callback = default_execution_error_callback
     
+    def set_execution_error_callback(self, callback):
+        """
+        Sets which function is to be called when there is an error when parsing a command
+
+        callback : function - The function to be called upon error
+
+        Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
+        """
+
+        if not iscoroutinefunction(callback):
+            raise exceptions.Not_Async_Function_Error('Callback must be a couroutine function')
+        self._execution_error_callback = callback
+
     def command(self, name, description = None, function = None):
         """
         Adds a command to the root of the command system
@@ -128,12 +145,15 @@ class Command_System(object):
         Raises discord_cli.exceptions.Discord_CLI_Error if inputs are not valid
         """
 
-        command_elements = await self._split_command_string(command_string)
-        cmd_params = await self._root.get_command(client, message, *command_elements)
-        cmd, params = cmd_params
-        if cmd is self._root:
-            raise exceptions.Command_Not_Found_Error('Command not found')
-        return await cmd.execute(client, message, params, *argv, **kwargs)
+        try:
+            command_elements = await self._split_command_string(command_string)
+            cmd_params = await self._root.get_command(client, message, *command_elements)
+            cmd, params = cmd_params
+            if cmd is self._root:
+                raise exceptions.Command_Not_Found_Error('Command not found')
+            return await cmd.execute(client, message, params, *argv, **kwargs)
+        except exceptions.Discord_CLI_Error as e:
+            return await self._execution_error_callback(e)
 
     async def usage_message(self, client, message, command_string):
         """
@@ -154,3 +174,10 @@ class Command_System(object):
         if cmd is self._root:
             raise exceptions.Command_Not_Found_Error('Command not found')
         return await cmd.usage_message(client, message)
+
+async def default_execution_error_callback(exception):
+    """
+    Returns a red discord embed with the error message in it
+    """
+
+    return discord.Embed(title = 'Error parsing command', description = ':x:' + str(exception), color = 0xf04747)
