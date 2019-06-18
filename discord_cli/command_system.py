@@ -68,26 +68,50 @@ class Command_System(object):
         command_string  : str   - The command string to be split
         Returns         : list  - A list containing the individual command identifiers and parameters
         """
-        
-        # Splitting all elements
-        sub_elements = command_string.split('\\ ')
-        elements = [x.split() for x in sub_elements]
 
-        # Joining elements with escaped space
-        for i in range(len(elements) - 1):
-            if len(elements[i]) == 0:
-                continue
-            if len(elements[i + 1]) == 0:
-                elements[i + 1].append(elements[i].pop(-1))
-            else:
-                elements[i + 1][0] = elements[i].pop(-1) + ' ' + elements[i + 1][0]
-
-        # Combining into one list
         result = []
-        for list_of_element in elements:
-            for element in list_of_element:
-                result.append(element)
+        char_ptr = -1
+
+        current_string = ''
+
+        within_quotes = False
+        
+        escape_next_char = False
+        escape_char = False
+
+        while True:
+            char_ptr += 1
+            if char_ptr == len(command_string):
+                if current_string != '':
+                    result.append(current_string)
+                break
+
+            escape_char = escape_next_char
+            escape_next_char = False
+
+            char = command_string[char_ptr]
+
+            if char == ' ' and within_quotes == False and escape_char == False:
+                if current_string == '':
+                    continue    
+                result.append(current_string)
+                current_string = ''
+                continue
             
+            if char == '\\' and escape_char == False:
+                escape_next_char = True
+                continue
+
+            if char == '"' and escape_char == False:
+                if within_quotes == False and current_string != '':
+                    raise exceptions.Value_Error('A quote used to start escaping text must follow a space')
+                if within_quotes == True and char_ptr + 1 < len(command_string) and command_string[char_ptr + 1] != ' ':
+                    raise exceptions.Value_Error('A quote used to end escaping text must be followed by a space')
+                within_quotes = not within_quotes
+                continue
+            
+            current_string += char
+
         return result
 
     async def execute(self, client, message, command_string, *argv, **kwargs):
