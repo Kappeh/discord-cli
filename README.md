@@ -102,7 +102,7 @@ After you have created the command system, append the following code.
 ```py
 CLIENT = discord.Client()
 TOKEN = 'REPLACE_THIS_WITH_YOUR_SECRET_DISCORD_BOT_TOKEN'
-PREFIX = '!'
+PREFIX = '?'
 
 @CLIENT.event
 async def on_message(message):
@@ -125,6 +125,11 @@ CLIENT.run(TOKEN)
 If you're having trouble creating a discord bot account or finding your secret token, you can find more information [here](https://github.com/SinisterRectus/Discordia/wiki/Setting-up-a-Discord-application).
 
 To further customize your discord bot, you can read up on the discord py package [here](https://discordpy.readthedocs.io/en/latest/api.html).
+
+### If All Has Gone Well
+
+If all has gone well, then you should be able to execute the two commands and recieve some feedback like this:
+![discord example](https://i.imgur.com/tkQf0ES.png)
 
 ## Documentation
 
