@@ -1,3 +1,4 @@
+import re
 from inspect import iscoroutinefunction
 
 import discord_cli.exceptions as exceptions
@@ -226,7 +227,7 @@ class Command(object):
                     raise exceptions.Unexpected_Word_Error('\'{}\' has no option or tag associated with --{}'.format(self._command_string, word))
 
             # If the parameter is a letter identifier
-            elif param.startswith('-'):
+            elif param.startswith('-') and len(param) > 1 and not param[1:].isdigit():
                 letters = param.replace('-', '')
                 
                 if len(letters) == 1 and letters in self._option_builder.letter_table:
@@ -462,7 +463,7 @@ class Command(object):
                     result += command_prefix + '  ' + str(tag) + '\n'
             
             if self._permission_builder.permission_count != 0:
-                result += command_prefix + 'Pemrissions:\n'
+                result += command_prefix + 'Permissions:\n'
                 for perm in self._permission_builder.permissions:
                     result += command_prefix + '  ' + str(perm) + '\n'
 
