@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="discord-cli",
-    version="1.0.0",
+    version="1.0.1",
     author="Kieran Powell",
     author_email="kieranleep@hotmail.com",
     description="A simple command line interface for discord bots",
