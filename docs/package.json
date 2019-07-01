@@ -1,7 +1,6 @@
 {
     "title": "API Reference",
     "description": "The following sections outlines the API of discord_cli.py.",
-
     "sections": [
         {
             "title": "Version Related Info",
@@ -492,10 +491,957 @@
             ]
         },
         {
-            "title": "Argument Builder"
+            "title": "Argument Builder",
+            "classes": [
+                {
+                    "prefix": "discord_cli.",
+                    "name": "Argument_Builder",
+                    "description": "The argument builder manages the arguments that are assigned to a command. It contains all the tools needed to add arguments to a command. Avoid instanciating this class manually.",
+                    "parameters": [
+                        {
+                            "name": "command",
+                            "datatype": "discord_cli.Command",
+                            "description": "The command the argument builder belongs to."
+                        }
+                    ],
+                    "properties": [
+                        {
+                            "name": "arguments",
+                            "datatype": "List[ discord_cli.Argument ]",
+                            "description": "The list of arguments currently added to the command."
+                        },
+                        {
+                            "name": "argument_count",
+                            "datatype": "int",
+                            "description": "The amount of arguments currently added to the command."
+                        },
+                        {
+                            "name": "name_table",
+                            "datatype": "Dict[ str, discord_cli.Argument ]",
+                            "description": "A dictionary which associates an argument name to the argument with that name."
+                        },
+                        {
+                            "name": "first_is_text",
+                            "datatype": "bool",
+                            "description": "Whether the first argument can be confused with a sub command."
+                        }
+                    ],
+                    "methods": [
+                        {
+                            "name": "integer",
+                            "description": "Adds an integer argument to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                },
+                                {
+                                    "name": "min",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The lower bound of valid input."
+                                },
+                                {
+                                    "name": "max",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The upper bound of valid input."
+                                },
+                                {
+                                    "name": "include_min",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value as valid."
+                                },
+                                {
+                                    "name": "include_max",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "word",
+                            "description": "Adds a word argument to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                },
+                                {
+                                    "name": "min_length",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The lower bound of valid input length."
+                                },
+                                {
+                                    "name": "max_length",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The upper bound of valid input length."
+                                },
+                                {
+                                    "name": "include_min_length",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value length as valid."
+                                },
+                                {
+                                    "name": "include_max_length",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value length as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "float",
+                            "description": "Adds a float argument to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                },
+                                {
+                                    "name": "min",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The lower bound of valid input."
+                                },
+                                {
+                                    "name": "max",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The upper bound of valid input."
+                                },
+                                {
+                                    "name": "include_min",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value as valid."
+                                },
+                                {
+                                    "name": "include_max",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "string",
+                            "description": "Adds a string argument to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                },
+                                {
+                                    "name": "min_length",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The lower bound of valid input length."
+                                },
+                                {
+                                    "name": "max_length",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The upper bound of valid input length."
+                                },
+                                {
+                                    "name": "include_min_length",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value length as valid."
+                                },
+                                {
+                                    "name": "include_max_length",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value length as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "user_mention",
+                            "description": "Adds a user mention argument to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "channel_mention",
+                            "description": "Adds a channel mention argument to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "role_mention",
+                            "description": "Adds a role mention argument to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "date",
+                            "description": "Adds a date argument to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                },
+                                {
+                                    "name": "min",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The lower bound of valid input. Of the form '%d/%m/%Y'."
+                                },
+                                {
+                                    "name": "max",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The upper bound of valid input. Of the form '%d/%m/%Y'."
+                                },
+                                {
+                                    "name": "include_min",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value as valid."
+                                },
+                                {
+                                    "name": "include_max",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "time",
+                            "description": "Adds a time argument to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                },
+                                {
+                                    "name": "min",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The lower bound of valid input. Of the form '%H:%M:%S'."
+                                },
+                                {
+                                    "name": "max",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The upper bound of valid input. Of the form '%H:%M:%S'."
+                                },
+                                {
+                                    "name": "include_min",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value as valid."
+                                },
+                                {
+                                    "name": "include_max",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "enum",
+                            "description": "Adds an enum argument to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the argument. Used to identify the argument's value within the command function."
+                                },
+                                {
+                                    "name": "values",
+                                    "datatype": "List[ str ]",
+                                    "description": "The list of valid strings."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the argument and it's perpose."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "title": "Option Builder"
+            "title": "Option Builder",
+            "classes": [
+                {
+                    "prefix": "discord_cli.",
+                    "name": "Option_Builder",
+                    "description": "The option builder manages the options that are assigned to a command. It contains all the tools needed to add options to a command. Avoid instanciating this class manually.",
+                    "parameters": [
+                        {
+                            "name": "command",
+                            "datatype": "discord_cli.Command",
+                            "description": "The command the option builder belongs to."
+                        }
+                    ],
+                    "properties": [
+                        {
+                            "name": "options",
+                            "datatype": "List[ discord_cli.Option ]",
+                            "description": "The list of options currently added to the command."
+                        },
+                        {
+                            "name": "option_count",
+                            "datatype": "int",
+                            "description": "The amount of options currently added to the command."
+                        },
+                        {
+                            "name": "name_table",
+                            "datatype": "Dict[ str, discord_cli.Option ]",
+                            "description": "A dictionary which associates an option name to the option with that name."
+                        },
+                        {
+                            "name": "letter_table",
+                            "datatype": "Dict[ str, discord_cli.Option ]",
+                            "description": "A dictionary which associates an option letter identifier to the option with that letter identifier."
+                        },
+                        {
+                            "name": "word_table",
+                            "datatype": "Dict[ str, discord_cli.Option ]",
+                            "description": "A dictionary which associates an option word identifier to the option with that word identifier."
+                        }
+                    ],
+                    "methods": [
+                        {
+                            "name": "integer",
+                            "description": "Adds an integer option to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                },
+                                {
+                                    "name": "min",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The lower bound of valid input."
+                                },
+                                {
+                                    "name": "max",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The upper bound of valid input."
+                                },
+                                {
+                                    "name": "include_min",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value as valid."
+                                },
+                                {
+                                    "name": "include_max",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "word",
+                            "description": "Adds a word option to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                },
+                                {
+                                    "name": "min_length",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The lower bound of valid input length."
+                                },
+                                {
+                                    "name": "max_length",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The upper bound of valid input length."
+                                },
+                                {
+                                    "name": "include_min_length",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value length as valid."
+                                },
+                                {
+                                    "name": "include_max_length",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value length as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "float",
+                            "description": "Adds a float option to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                },
+                                {
+                                    "name": "min",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The lower bound of valid input."
+                                },
+                                {
+                                    "name": "max",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The upper bound of valid input."
+                                },
+                                {
+                                    "name": "include_min",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value as valid."
+                                },
+                                {
+                                    "name": "include_max",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "string",
+                            "description": "Adds a string option to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                },
+                                {
+                                    "name": "min_length",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The lower bound of valid input length."
+                                },
+                                {
+                                    "name": "max_length",
+                                    "default": "None",
+                                    "datatype": "Optional[ int ]",
+                                    "description": "The upper bound of valid input length."
+                                },
+                                {
+                                    "name": "include_min_length",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value length as valid."
+                                },
+                                {
+                                    "name": "include_max_length",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value length as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "user_mention",
+                            "description": "Adds a user mention option to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "channel_mention",
+                            "description": "Adds a channel mention option to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "role_mention",
+                            "description": "Adds a role mention option to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "date",
+                            "description": "Adds a date option to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                },
+                                {
+                                    "name": "min",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The lower bound of valid input. Of the form '%d/%m/%Y'."
+                                },
+                                {
+                                    "name": "max",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The upper bound of valid input. Of the form '%d/%m/%Y'."
+                                },
+                                {
+                                    "name": "include_min",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value as valid."
+                                },
+                                {
+                                    "name": "include_max",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "time",
+                            "description": "Adds a time option to the command",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                },
+                                {
+                                    "name": "min",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The lower bound of valid input. Of the form '%H:%M:%S'."
+                                },
+                                {
+                                    "name": "max",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The upper bound of valid input. Of the form '%H:%M:%S'."
+                                },
+                                {
+                                    "name": "include_min",
+                                    "default": "True",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the minimum value as valid."
+                                },
+                                {
+                                    "name": "include_max",
+                                    "default": "False",
+                                    "datatype": "bool",
+                                    "description": "Whether to include the maximum value as valid."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "enum",
+                            "description": "Adds an enum option to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the option. Used to identify the option's value within the command function."
+                                },
+                                {
+                                    "name": "values",
+                                    "datatype": "List[ str ]",
+                                    "description": "The list of valid strings."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the option and it's perpose."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter identifier of the option. If not provided, the first letter of the name is used instead. Should be a letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word identifier of the option. Should only contian alphabetic characters."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
             "title": "Tag Builder"
