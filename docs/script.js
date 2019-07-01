@@ -75,8 +75,9 @@ function class_content(jsonObj) {
         result += "<p><b>Raises</b></p><ul>";
         for (let exception of jsonObj.raises)
             result += "<li>" + exception_content(exception) + "</li>";
-        result += "</ul><br>";
+        result += "</ul>";
     }
+    result += "<br>";
     if (jsonObj.properties)
         for (let property of jsonObj.properties)
             result += property_content(property);
