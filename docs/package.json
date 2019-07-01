@@ -1,0 +1,214 @@
+{
+    "title": "API Reference",
+    "description": "The following sections outlines the API of discord_cli.py.",
+
+    "sections": [
+        {
+            "title": "Version Related Info",
+            "properties": [
+                {
+                    "datatype": "str",
+                    "prefix": "discord_cli.",
+                    "name": "discord_cli.__version__",
+                    "description": "A string representation of the version. This is based off PEP 440."
+                }
+            ]
+        },
+        {
+            "title": "Command System",
+            "classes": [
+                {
+                    "prefix": "discord_cli.",
+                    "name": "Command_System",
+                    "description": "The command system is a class which is used to generate and execute a set of commands.",
+                    "parameters": [
+                        {
+                            "name": "name",
+                            "default": "'Command_System'",
+                            "datatype": "Optional[ str ]",
+                            "description": "The name of the command system. The name should only contain alphabetic characters and underscores."
+                        },
+                        {
+                            "name": "description",
+                            "default": "None",
+                            "datatype": "Optional[ str ]",
+                            "description": "A description of the command system. Usually explaining the perpose of the commands it contains."
+                        }
+                    ],
+                    "raises": [
+                        {
+                            "exception": "discord_cli.Discord_CLI_Error",
+                            "condition": "If the parameters are invalid"
+                        }
+                    ],
+                    "properties": [
+                        {
+                            "name": "commands",
+                            "datatype": "List[ discord_cli.Command ]",
+                            "description": "A list of the commands at the first level of the command system."
+                        },
+                        {
+                            "name": "command_count",
+                            "datatype": "int",
+                            "description": "The amount of commands at the first level of the command system."
+                        }
+                    ],
+                    "methods": [
+                        {
+                            "name": "command",
+                            "description": "Adds a command to the first level of the command system and returns it.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "description": "The name of the command. The name should only contain alphabetic characters and underscores.",
+                                    "datatype": "str"
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the command"
+                                },
+                                {
+                                    "name": "function",
+                                    "default": "None",
+                                    "datatype": "Optional[ coroutine ]",
+                                    "description": "The function executed when the command is called."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ],
+                            "returns": [
+                                {
+                                    "datatype": "discord_cli.Command",
+                                    "description": "The command added to the command system."
+                                }
+                            ]
+                        },
+                        {
+                            "name": "tree_string",
+                            "description": "Gets a string representation of the whole command system tree.",
+                            "parameters": [
+                                {
+                                    "name": "details",
+                                    "default": "False",
+                                    "datatype": "Optional[ bool ]",
+                                    "description": "When true, shows the arguments, options, tags and permissions of the commands."
+                                }
+                            ],
+                            "returns": [
+                                {
+                                    "datatype": "str",
+                                    "description": "The string representation of the command system."
+                                }
+                            ]
+                        },
+                        {
+                            "name": "execute",
+                            "description": "Executes a command string.",
+                            "async": true,
+                            "parameters": [
+                                {
+                                    "name": "client",
+                                    "datatype": "discord.Client",
+                                    "description": "The discord client for the bot application."
+                                },
+                                {
+                                    "name": "message",
+                                    "datatype": "discord.Message",
+                                    "description": "The discord message which envoked the command."
+                                },
+                                {
+                                    "name": "command_string",
+                                    "datatype": "str",
+                                    "description": "The command string to parse and execute."
+                                },
+                                {
+                                    "name": "*argv",
+                                    "description": "Any extra arguments which you wish to be passed to the command function."
+                                },
+                                {
+                                    "name": "**kwargs",
+                                    "description": "Any extra keyword arguments which you wish to be passed to the command function."
+                                }
+                            ],
+                            "returns": [
+                                {
+                                    "datatype": "object",
+                                    "description": "The value returned by the command function. If the execution failed, the return of the execution error callback is returned instead."
+                                }
+                            ]
+                        },
+                        {
+                            "name": "usage_message",
+                            "description": "Gets a string representation of the command, it's usage and it's sub commands.",
+                            "async": true,
+                            "parameters": [
+                                {
+                                    "name": "client",
+                                    "datatype": "discord.Client",
+                                    "description": "The discord client for the bot application."
+                                },
+                                {
+                                    "name": "message",
+                                    "datatype": "discord.Message",
+                                    "description": "The discord message which envoked the command."
+                                },
+                                {
+                                    "name": "command_string",
+                                    "datatype": "str",
+                                    "description": "The command string which identifies the command to get the usage message for."
+                                }
+                            ],
+                            "returns": [
+                                {
+                                    "datatype": "str",
+                                    "description": "The string representation of the usage message."
+                                }
+                            ]
+                        },
+                        {
+                            "name": "set_execution_error_callback",
+                            "description": "Sets which function is to be called when there is an error when parsing a command.",
+                            "parameters": [
+                                {
+                                    "name": "callback",
+                                    "datatype": "coroutine",
+                                    "description": "The function to be called upon error."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Command"
+        },
+        {
+            "title": "Argument Builder"
+        },
+        {
+            "title": "Option Builder"
+        },
+        {
+            "title": "Tag Builder"
+        },
+        {
+            "title": "Permission Builder"
+        },
+        {
+            "title": "Permissions"
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+html {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    margin: 0px;
+    padding: 50px;
+    font-family: "Courier New";
+}
+
+.code_line {
+    width: 100%;
+    padding: 0px;
+    background: #dddddd;
+
+    display: block;
+}
+
+.code_line p {
+    line-height: 30px;
+    margin-left: 10px;
+}
+
+.indent {
+    margin-left: 20px;
+}
+
+hr {
+    border: 1px solid #aaaaff;
+}
