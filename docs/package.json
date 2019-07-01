@@ -91,7 +91,7 @@
                         },
                         {
                             "name": "tree_string",
-                            "description": "Gets a string representation of the whole command system tree.",
+                            "description": "Gets a string representation of the whole command system tree. It is reccomended that this method is only used for debugging.",
                             "parameters": [
                                 {
                                     "name": "details",
@@ -193,7 +193,303 @@
             ]
         },
         {
-            "title": "Command"
+            "title": "Command",
+            "classes": [
+                {
+                    "prefix": "discord_cli.",
+                    "name": "Command",
+                    "description": "A command object represents a single command. It contains the tools to assign arguments, options, tags and permissions to a command. A command object should not be initialized manually.",
+                    "parameters": [
+                        {
+                            "name": "name",
+                            "datatype": "str",
+                            "description": "The name of the command. The name should only contain alphabetic characters and underscores."
+                        },
+                        {
+                            "name": "description",
+                            "default": "None",
+                            "datatype": "Optional[ str ]",
+                            "description": "A description of the command."
+                        },
+                        {
+                            "name": "parent",
+                            "default": "None",
+                            "datatype": "Optional[ discord_cli.Command ]",
+                            "description": "The command which this command is a sub command of."
+                        },
+                        {
+                            "name": "command_string",
+                            "default": "None",
+                            "datatype": "Optional[ str ]",
+                            "description": "The full command string required to identify the command uniquely."
+                        },
+                        {
+                            "name": "function",
+                            "default": "None",
+                            "datatype": "Optional[ coroutine ]",
+                            "description": "The function to be executed when the command is called."
+                        }
+                    ],
+                    "raises": [
+                        {
+                            "exception": "Discord_CLI_Error",
+                            "condition": "if the parameters are invalid"
+                        }
+                    ],
+                    "properties": [
+                        {
+                            "name": "parent",
+                            "datatype": "discord_cli.Command",
+                            "description": "The command which this command is a sub command of. Can be None"
+                        },
+                        {
+                            "name": "name",
+                            "datatype": "str",
+                            "description": "The name of the command."
+                        },
+                        {
+                            "name": "description",
+                            "datatype": "str",
+                            "description": "A description of the command. Can be None."
+                        },
+                        {
+                            "name": "command_string",
+                            "datatype": "str",
+                            "description": "The full command string required to identify the command uniquely. Can be None."
+                        },
+                        {
+                            "name": "sub_commands",
+                            "datatype": "List[ discord_cli.Command ]",
+                            "description": "The list of sub commands."
+                        },
+                        {
+                            "name": "sub_command_count",
+                            "datatype": "int",
+                            "description": "The amount of sub commands."
+                        },
+                        {
+                            "name": "function",
+                            "datatype": "coroutine",
+                            "description": "The function that is executed when the command is called. Can be None."
+                        },
+                        {
+                            "name": "argument",
+                            "datatype": "discord_cli.Argument_Builder",
+                            "description": "The argument builder used to add arguments to the command."
+                        },
+                        {
+                            "name": "option",
+                            "datatype": "discord_cli.Option_Builder",
+                            "description": "The option builder used to add options to the command."
+                        }
+                    ],
+                    "methods": [
+                        {
+                            "name": "tag",
+                            "description": "Adds a tag to the command.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "datatype": "str",
+                                    "description": "The name of the tag. Used to identify the tags value within the command function."
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the tag. Describes what the tag is used for and what it does."
+                                },
+                                {
+                                    "name": "letter",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The letter which identifies the tag. If not provided, the first letter of the name is used. Must contain a single letter."
+                                },
+                                {
+                                    "name": "word",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "The word which identifies the tag. Must contain alphabetic characters only."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "Discord_CLI_Error",
+                                    "condition": "if the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "permission",
+                            "description": "Adds a permission to the command",
+                            "parameters": [
+                                {
+                                    "name": "permission",
+                                    "datatype": "discord_cli.Base_Permission",
+                                    "description": "The permission to add to the command. All permissions are seperate and a user only has to satisfy one of them to call a command successfully."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "Discord_CLI_Error",
+                                    "condition": "if the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "get_command",
+                            "async": true,
+                            "description": "Gets a command specified by identifiers in argv and returns the command and the elements in argv which are parameters. Avoid calling this method manually.",
+                            "parameters": [
+                                {
+                                    "name": "client",
+                                    "datatype": "discord.Client",
+                                    "description": "The discord client for the bot application."
+                                },
+                                {
+                                    "name": "message",
+                                    "datatype": "discord.Message",
+                                    "description": "The discord message which envoked the command."
+                                },
+                                {
+                                    "name": "*argv",
+                                    "description": "The seperated elements of a command string."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "Discord_CLI_Error",
+                                    "condition": "if the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "execute",
+                            "async": true,
+                            "description": "Executes the command's function. Avoid calling this method manually.",
+                            "parameters": [
+                                {
+                                    "name": "client",
+                                    "datatype": "discord.Client",
+                                    "description": "The discord client for the bot application."
+                                },
+                                {
+                                    "name": "message",
+                                    "datatype": "discord.Message",
+                                    "description": "The discord message which envoked the command."
+                                },
+                                {
+                                    "name": "params",
+                                    "datatype": "List[ str ]",
+                                    "description": "A list containing the seperated parameter input strings."
+                                },
+                                {
+                                    "name": "*argv",
+                                    "description": "Any extra arguments which you wish to be passed to the command function."
+                                },
+                                {
+                                    "name": "**kwargs",
+                                    "description": "Any extra keyword arguments which you wish to be passed to the command function."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "Discord_CLI_Error",
+                                    "condition": "if the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "command",
+                            "description": "Adds a sub command to the command and returns it.",
+                            "parameters": [
+                                {
+                                    "name": "name",
+                                    "description": "The name of the command. The name should only contain alphabetic characters and underscores.",
+                                    "datatype": "str"
+                                },
+                                {
+                                    "name": "description",
+                                    "default": "None",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A description of the command"
+                                },
+                                {
+                                    "name": "function",
+                                    "default": "None",
+                                    "datatype": "Optional[ coroutine ]",
+                                    "description": "The function executed when the command is called."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ],
+                            "returns": [
+                                {
+                                    "datatype": "discord_cli.Command",
+                                    "description": "The sub command added to the command."
+                                }
+                            ]
+                        },
+                        {
+                            "name": "tree_string",
+                            "description": "Returns a string representation of the command and all sub commands below it in the command system tree. Avoid using this method manually.",
+                            "parameters": [
+                                {
+                                    "name": "details",
+                                    "default": "False",
+                                    "datatype": "Optional[ bool ]",
+                                    "description": "When true, shows the arguments, options, tags and permission of the commands."
+                                },
+                                {
+                                    "name": "prefix",
+                                    "default": "''",
+                                    "datatype": "Optional[ str ]",
+                                    "description": "A string that is displayed before each line of the result."
+                                },
+                                {
+                                    "name": "include_name",
+                                    "default": "True",
+                                    "datatype": "Optional[ bool ]",
+                                    "description": "Whether to show the name of the first command."
+                                }
+                            ],
+                            "returns": [
+                                {
+                                    "datatype": "str",
+                                    "description": "The string representation of the command tree from this command."
+                                }
+                            ]
+                        },
+                        {
+                            "name": "usage_message",
+                            "async": true,
+                            "description": "Returns a usage message for the command.",
+                            "parameters": [
+                                {
+                                    "name": "client",
+                                    "datatype": "discord.Client",
+                                    "description": "The discord client for the bot application."
+                                },
+                                {
+                                    "name": "message",
+                                    "datatype": "discord.Message",
+                                    "description": "The discord message which envoked the command."
+                                }
+                            ],
+                            "returns": [
+                                {
+                                    "datatype": "str",
+                                    "description": "The usage message for the command."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
             "title": "Argument Builder"

@@ -125,15 +125,15 @@ function method_content(jsonObj) {
         result += "<p><b>Raises</b></p><ul>";
         for (let exception of jsonObj.raises)
             result += "<li>" + exception_content(exception) + "</li>";
-        result += "</ul><br>";
+        result += "</ul>";
     }
     if (jsonObj.returns) {
         result += "<p><b>Returns</b></p><ul>";
         for (let return_value of jsonObj.returns)
             result += "<li>" + return_content(return_value) + "</li>";
-        result += "</ul><br>";
+        result += "</ul>";
     }
-    result += "</div>";
+    result += "<br></div>";
     return result;
 }
 
