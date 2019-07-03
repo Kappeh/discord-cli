@@ -324,7 +324,7 @@
                             "parameters": [
                                 {
                                     "name": "permission",
-                                    "datatype": "discord_cli.Base_Permission",
+                                    "datatype": "discord_cli.perms.Base_Permission",
                                     "description": "The permission to add to the command. All permissions are seperate and a user only has to satisfy one of them to call a command successfully."
                                 }
                             ],
@@ -1444,13 +1444,290 @@
             ]
         },
         {
-            "title": "Tag Builder"
+            "title": "Permission Builder",
+            "classes": [
+                {
+                    "prefix": "discord_cli.",
+                    "name": "Permission_Builder",
+                    "description": "The permission builder class represents a set of criteria which a user must meet in order to execute and/or view a command. Avoid instanciating this class manually.",
+                    "parameters": [
+                        {
+                            "name": "command",
+                            "datatype": "discord_cli.Command",
+                            "description": "The command which the permission builder belongs to."
+                        }
+                    ],
+                    "properties": [
+                        {
+                            "name": "permissions",
+                            "datatype": "List[ discord_cli.perms.Base_Permission ]",
+                            "description": "The list of permissions a user must have at least one of to execute and/or view the command."
+                        },
+                        {
+                            "name": "permission_count",
+                            "datatype": "int",
+                            "description": "The amount of permissions the command has."
+                        }
+                    ],
+                    "methods": [
+                        {
+                            "name": "permission",
+                            "description": "Adds a permission to the command.",
+                            "parameters": [
+                                {
+                                    "name": "permisison",
+                                    "datatype": "discord_cli.perms.Base_Permission",
+                                    "description": "The permission to be added to the command."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "evaluate",
+                            "async": true,
+                            "description": "Evaluates whether a user in a channel has this permission. Avoid calling this method manually.",
+                            "parameters": [
+                                {
+                                    "name": "client",
+                                    "datatype": "discord.Client",
+                                    "description": "The discord client for the bot application."
+                                },
+                                {
+                                    "name": "message",
+                                    "datatype": "discord.Message",
+                                    "description": "The discord message which envoked the command."
+                                }
+                            ],
+                            "raises": [
+                                {
+                                    "exception": "discord_cli.Discord_CLI_Error",
+                                    "condition": "If the parameters are invalid"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "title": "Permission Builder"
-        },
-        {
-            "title": "Permissions"
+            "title": "Permissions",
+            "classes": [
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "And_Permission_Operator",
+                    "description": "The result of the and operation between two permissions.",
+                    "parameters": [
+                        {
+                            "name": "perm1",
+                            "datatype": "discord_cli.perms.Base_Permission",
+                            "description": "The permission on the left of the operator."
+                        },
+                        {
+                            "name": "perm2",
+                            "datatype": "discord_cli.perms.Base_Permission",
+                            "description": "The permission on the right of the operator."
+                        }
+                    ],
+                    "raises": [
+                        {
+                            "exception": "discord_cli.Discord_CLI_Error",
+                            "condition": "If the parameters are invalid"
+                        }
+                    ]
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Or_Permission_Operator",
+                    "description": "The result of the or operation between two permissions.",
+                    "parameters": [
+                        {
+                            "name": "perm1",
+                            "datatype": "discord_cli.perms.Base_Permission",
+                            "description": "The permission on the left of the operator."
+                        },
+                        {
+                            "name": "perm2",
+                            "datatype": "discord_cli.perms.Base_Permission",
+                            "description": "The permission on the right of the operator."
+                        }
+                    ],
+                    "raises": [
+                        {
+                            "exception": "discord_cli.Discord_CLI_Error",
+                            "condition": "If the parameters are invalid"
+                        }
+                    ]
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "User_Permission",
+                    "description": "A permission granted to a specific user.",
+                    "parameters": [
+                        {
+                            "name": "user_id",
+                            "datatype": "int",
+                            "description": "The discord user id of the user."
+                        }
+                    ],
+                    "raises": [
+                        {
+                            "exception": "discord_cli.Discord_CLI_Error",
+                            "condition": "If the parameters are invalid"
+                        }
+                    ]
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Guild_Permission",
+                    "description": "A permission granted to users within a guild.",
+                    "parameters": [
+                        {
+                            "name": "user_id",
+                            "datatype": "int",
+                            "description": "The discord guild id of the guild."
+                        }
+                    ],
+                    "raises": [
+                        {
+                            "exception": "discord_cli.Discord_CLI_Error",
+                            "condition": "If the parameters are invalid"
+                        }
+                    ]
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Custom_Permission",
+                    "description": "A permission granted by your custom function. See examples on the Github page for more details.",
+                    "parameters": [
+                        {
+                            "name": "function",
+                            "datatype": "coroutine",
+                            "description": "The function to grant permission to users."
+                        }
+                    ],
+                    "raises": [
+                        {
+                            "exception": "discord_cli.Discord_CLI_Error",
+                            "condition": "If the parameters are invalid"
+                        }
+                    ]
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Create_Instant_Invite",
+                    "description": "A permission granted to users if they have the discord create instant invite permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Kick_Members",
+                    "description": "A permission granted to users if they have the discord kick members permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Ban_Members",
+                    "description": "A permission granted to users if they have the discord ban members permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Administrator",
+                    "description": "A permission granted to users if they have the discord administrator permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Manage_Channel",
+                    "description": "A permission granted to users if they have the discord manage channels permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Manage_Guild",
+                    "description": "A permission granted to users if they have the discord manage guild permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Add_Reactions",
+                    "description": "A permission granted to users if they have the discord add reactions permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "View_Audit_Log",
+                    "description": "A permission granted to users if they have the discord view audit log permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Read_Messages",
+                    "description": "A permission granted to users if they have the discord read messages permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Send_Messages",
+                    "description": "A permission granted to users if they have the discord send messages permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Send_TTS_Messages",
+                    "description": "A permission granted to users if they have the discord send tts messages permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Manage_Messages",
+                    "description": "A permission granted to users if they have the discord manage messages permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Embed_Links",
+                    "description": "A permission granted to users if they have the discord embed links permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Attach_Files",
+                    "description": "A permission granted to users if they have the discord attach files permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Read_Message_History",
+                    "description": "A permission granted to users if they have the discord read message history permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Mention_Everyone",
+                    "description": "A permission granted to users if they have the discord mention everyone permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "External_Emojis",
+                    "description": "A permission granted to users if they have the discord external emojis permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Change_Nickname",
+                    "description": "A permission granted to users if they have the discord change nickname permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Manage_Nicknames",
+                    "description": "A permission granted to users if they have the discord manage nicknames permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Manage_Roles",
+                    "description": "A permission granted to users if they have the discord manage roles permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Manage_Webhooks",
+                    "description": "A permission granted to users if they have the discord manage webhooks permission."
+                },
+                {
+                    "prefix": "discord_cli.perms.",
+                    "name": "Manage_Emojis",
+                    "description": "A permission granted to users if they have the discord manage emojis permission."
+                }
+            ]
         }
     ]
 }

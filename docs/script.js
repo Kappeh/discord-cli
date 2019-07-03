@@ -49,7 +49,7 @@ function class_content(jsonObj) {
     let result = "<div class=\"class " + jsonObj.name + "\">";
     result += "<div class=\"code_line\"><p><i>class</i> ";
     if (jsonObj.prefix)
-        result += jsonObj.prefix + " ";
+        result += jsonObj.prefix;
     result += "<b>" + jsonObj.name + "(</b><i>";
     if (jsonObj.parameters) {
         let param_strings = [];
@@ -69,7 +69,7 @@ function class_content(jsonObj) {
         result += "<p><b>Parameters</b></p><ul>";
         for (let param of jsonObj.parameters)
             result += "<li>" + parameter_content(param) + "</li>";
-        result += "</ul>"
+        result += "</ul>";
     }
     if (jsonObj.raises) {
         result += "<p><b>Raises</b></p><ul>";
